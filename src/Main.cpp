@@ -1,7 +1,8 @@
 #include "Client.h"
 #include "Logger.h"
 #include "DrawingUtil.h"
-#include "PacketUtil.h"
+#include "NetworkingConstants.h"
+#include "RobotIO.h"
 #include <SFML/Window.hpp>
 #include <SFML/Graphics.hpp>
 #include <iostream>
@@ -91,6 +92,13 @@ void ClientMessageCallback(Packet& packet) {
 		forwards = drive;
 		rotation = rotate;
 
+		/*if (forwards > 0) {
+			RobotIO::SendPSoCByte('a');
+		} else {
+			RobotIO::SendPSoCByte('b');
+		}*/
+		RobotIO::SetMotor(1, forwards);
+
 		break;
 	}
 }
@@ -104,9 +112,13 @@ int main() {
 	pthread_t windowThread;
 	pthread_create(&windowThread, NULL, WindowThread, (void *) &client);
 
+	RobotIO::Start();
+
 	pthread_join(windowThread, NULL);
 
 	client.Disconnect();
+
+	RobotIO::Stop();
 
 	return 0;
 }
