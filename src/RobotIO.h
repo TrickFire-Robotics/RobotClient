@@ -24,12 +24,7 @@ public:
 
 	static void SendPSoCByte(const unsigned char val);
 
-private:
-	static map<unsigned char, double> motorValues;
-
-	static pthread_t commThread;
-
-	static int psocFD;
+	static void SendPSoCBytes(const unsigned char val[]);
 
 	// PWM = 0 to 254, this converts from 127 being zero, 0 being full reverse, and 254 being full forwards
 	static inline double PWMToDouble(unsigned char pwm) {
@@ -39,6 +34,13 @@ private:
 	static inline unsigned char DoubleToPWM(double doub) {
 		return (unsigned char)(doub * 127) + 127;
 	}
+
+private:
+	static map<unsigned char, double> motorValues;
+
+	static pthread_t commThread;
+
+	static int psocFD;
 
 	static void * ThreadLoop(void * pointless);
 };

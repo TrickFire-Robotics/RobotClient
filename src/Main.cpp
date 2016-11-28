@@ -97,7 +97,17 @@ void ClientMessageCallback(Packet& packet) {
 		} else {
 			RobotIO::SendPSoCByte('b');
 		}*/
-		RobotIO::SetMotor(1, forwards);
+		//RobotIO::SetMotor(97, forwards);
+
+		cout << "Drive: " << drive << ", Rotate: " << rotate << endl;
+
+		RobotIO::SendPSoCByte(97);
+		usleep(50);
+		RobotIO::SendPSoCByte(RobotIO::DoubleToPWM(forwards));
+		usleep(50);
+		RobotIO::SendPSoCByte(255);
+		usleep(50);
+		cout << "PWM " << (int)RobotIO::DoubleToPWM(forwards) << endl;
 
 		break;
 	}
@@ -109,13 +119,13 @@ int main() {
 	Client client("127.0.0.1", 25565);
 	client.SetMessageCallback(ClientMessageCallback);
 
-	pthread_t windowThread;
-	pthread_create(&windowThread, NULL, WindowThread, (void *) &client);
+	//pthread_t windowThread;
+	//pthread_create(&windowThread, NULL, WindowThread, (void *) &client);
 
 	RobotIO::Start();
 
-	pthread_join(windowThread, NULL);
-
+	//pthread_join(windowThread, NULL);
+	client.Join();
 	client.Disconnect();
 
 	RobotIO::Stop();
