@@ -92,22 +92,7 @@ void ClientMessageCallback(Packet& packet) {
 		forwards = drive;
 		rotation = rotate;
 
-		/*if (forwards > 0) {
-			RobotIO::SendPSoCByte('a');
-		} else {
-			RobotIO::SendPSoCByte('b');
-		}*/
-		//RobotIO::SetMotor(97, forwards);
-
-		cout << "Drive: " << drive << ", Rotate: " << rotate << endl;
-
-		RobotIO::SendPSoCByte(97);
-		usleep(50);
-		RobotIO::SendPSoCByte(RobotIO::DoubleToPWM(forwards));
-		usleep(50);
-		RobotIO::SendPSoCByte(255);
-		usleep(50);
-		cout << "PWM " << (int)RobotIO::DoubleToPWM(forwards) << endl;
+		RobotIO::SetMotor(97, forwards);
 
 		break;
 	}

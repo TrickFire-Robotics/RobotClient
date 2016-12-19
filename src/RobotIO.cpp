@@ -56,9 +56,15 @@ namespace trickfire {
 			// TODO: Make periodic (add a delay)
 			// TODO: Reserved char values for something special (disabled or something?)
 			for(map<unsigned char, double>::iterator iterator = motorValues.begin(); iterator != motorValues.end(); iterator++) {
-				//SendPSoCByte(iterator->first);
-				//SendPSoCByte(DoubleToPWM(iterator->second));
-				//cout << "Sending " << (int)DoubleToPWM(iterator->second) << endl;
+				SendPSoCByte(iterator->first);
+				usleep(50);
+				unsigned char pwm = DoubleToPWM(iterator->second);
+				if (pwm == 0) pwm = 1;
+				SendPSoCByte(pwm);
+				usleep(50);
+				SendPSoCByte(255);
+				usleep(50);
+				cout << "Sending " << (int)DoubleToPWM(iterator->second) << " on " << iterator->first << endl;
 			}
 		}
 	}
