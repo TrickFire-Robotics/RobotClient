@@ -21,8 +21,8 @@ using namespace trickfire;
 using namespace sf;
 using namespace std;
 
-double forwards = 0.5;
-double rotation = -0.25;
+double forwards = 0.0;
+double rotation = 0.0;
 
 void DrawTrickFireHeader(Font& font, RenderWindow& window) {
 	Text header;
