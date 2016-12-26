@@ -8,6 +8,8 @@
 #include <iostream>
 #include <pthread.h>
 
+#define UI_ENABLED false
+
 #define COL1 128
 #define COL2 300
 
@@ -104,12 +106,16 @@ int main() {
 	Client client("127.0.0.1", 25565);
 	client.SetMessageCallback(ClientMessageCallback);
 
-	//pthread_t windowThread;
-	//pthread_create(&windowThread, NULL, WindowThread, (void *) &client);
+#if defined(UI_ENABLED) and UI_ENABLED
+	pthread_t windowThread;
+	pthread_create(&windowThread, NULL, WindowThread, (void *) &client);
+#endif
 
 	RobotIO::Start();
 
-	//pthread_join(windowThread, NULL);
+#if defined(UI_ENABLED) and UI_ENABLED
+	pthread_join(windowThread, NULL);
+#endif
 	client.Join();
 	client.Disconnect();
 
