@@ -2,6 +2,7 @@
 #define ROBOTIO_H_
 
 #include <map>
+#include <vector>
 #include <iostream>
 #include <pthread.h>
 #include <fcntl.h>
@@ -17,6 +18,8 @@ namespace trickfire {
 class RobotIO {
 public:
 	static void SetMotor(unsigned char motorId, double value);
+
+	static void SimpleArcade(double forwards, double rot);
 
 	static void Start();
 

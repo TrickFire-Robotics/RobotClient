@@ -92,14 +92,14 @@ void ClientMessageCallback(Packet& packet) {
 		forwards = drive;
 		rotation = rotate;
 
-		RobotIO::SetMotor(97, forwards);
+		RobotIO::SimpleArcade(forwards, rotation);
 
 		break;
 	}
 }
 
 int main() {
-	Logger::SetLoggingLevel(Logger::LEVEL_INFO_VERY_FINE);
+	Logger::SetLoggingLevel(Logger::LEVEL_INFO_FINE);
 
 	Client client("127.0.0.1", 25565);
 	client.SetMessageCallback(ClientMessageCallback);
