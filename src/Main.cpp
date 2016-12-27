@@ -3,12 +3,14 @@
 #include "DrawingUtil.h"
 #include "NetworkingConstants.h"
 #include "RobotIO.h"
+#include "Command.h"
+#include "TestOverrideCommand.h"
 #include <SFML/Window.hpp>
 #include <SFML/Graphics.hpp>
 #include <iostream>
 #include <pthread.h>
 
-#define UI_ENABLED false
+#define UI_ENABLED true
 
 #define COL1 128
 #define COL2 300
@@ -37,7 +39,7 @@ void DrawTrickFireHeader(Font& font, RenderWindow& window) {
 }
 
 void * WindowThread(void * cl) {
-	Client * client = (Client *) cl;
+	//Client * client = (Client *) cl;
 
 	Font wlmCarton;
 	if (!wlmCarton.loadFromFile("wlm_carton.ttf")) {
@@ -113,6 +115,9 @@ int main() {
 
 	RobotIO::Start();
 
+	TestOverrideCommand testCommand;
+	testCommand.Start();
+
 #if defined(UI_ENABLED) and UI_ENABLED
 	pthread_join(windowThread, NULL);
 #endif
@@ -120,6 +125,7 @@ int main() {
 	client.Disconnect();
 
 	RobotIO::Stop();
+	Command::StopAllCommands();
 
 	return 0;
 }
