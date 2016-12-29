@@ -9,6 +9,7 @@
 #include "Command.h"
 #include "TestOverrideCommand.h"
 #include "StandardDriveCommand.h"
+#include <SFML/System.hpp>
 #include <SFML/Window.hpp>
 #include <SFML/Graphics.hpp>
 #include <iostream>
@@ -26,6 +27,7 @@ public:
 
 private:
 	static void * WindowThread(void * cl);
+	static void SfmlWindowThread(Client * client);
 	static void ClientMessageCallback(Packet& packet);
 	static void DrawTrickFireHeader(Font& font, RenderWindow& window);
 

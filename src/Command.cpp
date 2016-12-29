@@ -65,6 +65,7 @@ bool Command::IsFinished() {
 
 void Command::UpdatePeriodic() {
 	cout << GetDisplayName() << ": " << runningTime << "s" << endl;
+	cout << runningCommands.size() << endl;
 	usleep(100000);
 }
 

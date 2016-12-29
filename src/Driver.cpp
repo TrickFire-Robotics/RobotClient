@@ -22,9 +22,7 @@ void Driver::OnNonDefaultDriveFinish() {
 	driveCommand->Start();
 }
 
-void * Driver::WindowThread(void * cl) {
-	//Client * client = (Client *) cl;
-
+void Driver::SfmlWindowThread(Client * client) {
 	Font wlmCarton;
 	if (!wlmCarton.loadFromFile("wlm_carton.ttf")) {
 		cerr << "Error loading font" << endl;
@@ -63,8 +61,6 @@ void * Driver::WindowThread(void * cl) {
 
 		window.display();
 	}
-
-	return NULL;
 }
 
 void Driver::ClientMessageCallback(Packet& packet) {
@@ -110,8 +106,8 @@ void Driver::Start() {
 	client.SetMessageCallback(ClientMessageCallback);
 
 #if defined(UI_ENABLED) and UI_ENABLED
-	pthread_t windowThread;
-	pthread_create(&windowThread, NULL, WindowThread, (void *) &client);
+	sf::Thread windowThread(&Driver::SfmlWindowThread, &client);
+	windowThread.launch();
 #endif
 
 	RobotIO::Start();
@@ -120,7 +116,7 @@ void Driver::Start() {
 	driveCommand->Start();
 
 #if defined(UI_ENABLED) and UI_ENABLED
-	pthread_join(windowThread, NULL);
+	windowThread.wait();
 #else
 	client.Join();
 #endif
