@@ -12,7 +12,7 @@
 #define REAR_RIGHT 'd'
 
 namespace trickfire {
-pthread_t RobotIO::commThread;
+sf::Thread RobotIO::commThread(&RobotIO::ThreadLoop);
 map<unsigned char, double> RobotIO::motorValues;
 int RobotIO::psocFD;
 
@@ -63,14 +63,14 @@ void RobotIO::Start() {
 				"Error setting PSoC attributes");
 	}
 
-	pthread_create(&commThread, NULL, &ThreadLoop, (void *) NULL);
+	commThread.launch();
 }
 
 void RobotIO::Stop() {
 	close(psocFD);
 }
 
-void * RobotIO::ThreadLoop(void * pointless) {
+void RobotIO::ThreadLoop() {
 	while (true) {
 		// TODO: Make periodic (add a delay)
 		// TODO: Reserved char values for something special (disabled or something?)

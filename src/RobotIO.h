@@ -1,6 +1,7 @@
 #ifndef ROBOTIO_H_
 #define ROBOTIO_H_
 
+#include <SFML/System.hpp>
 #include <map>
 #include <vector>
 #include <iostream>
@@ -32,11 +33,11 @@ public:
 private:
 	static map<unsigned char, double> motorValues;
 
-	static pthread_t commThread;
+	static sf::Thread commThread;
 
 	static int psocFD;
 
-	static void * ThreadLoop(void * pointless);
+	static void ThreadLoop();
 
 	// PWM = 0 to 254, this converts from 127 being zero, 0 being full reverse, and 254 being full forwards
 	static inline double PWMToDouble(unsigned char pwm) {
