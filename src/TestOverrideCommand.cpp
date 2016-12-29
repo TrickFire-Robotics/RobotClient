@@ -1,7 +1,9 @@
 #include "TestOverrideCommand.h"
 #include "RobotIO.h"
+#include "Driver.h"
 
 namespace trickfire {
+
 	void TestOverrideCommand::UpdatePeriodic() {
 		RobotIO::SimpleArcade(0.0, 1.0);
 	}
@@ -16,5 +18,6 @@ namespace trickfire {
 
 	void TestOverrideCommand::OnFinish() {
 		RobotIO::SimpleArcade(0.0, 0.0);
+		Driver::OnNonDefaultDriveFinish();
 	}
 }

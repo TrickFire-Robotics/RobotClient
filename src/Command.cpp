@@ -7,7 +7,7 @@ namespace trickfire {
 	void * Command::CommandThreadLoop(void * _cmd) {
 		Command * command = ((Command*) _cmd);
 
-		while (!command->IsFinished()) {
+		while (!command->IsFinished() && command->running) {
 			long timediff = duration_cast<milliseconds>(system_clock::now().time_since_epoch()).count() - command->_prevTime;
 			command->_prevTime = duration_cast<milliseconds>(system_clock::now().time_since_epoch()).count();
 			command->deltaTime = ((float) timediff) / 1000;
@@ -38,7 +38,6 @@ namespace trickfire {
 	}
 
 	void Command::Stop() {
-		pthread_cancel(thread);
 		running = false;
 		OnFinish();
 
