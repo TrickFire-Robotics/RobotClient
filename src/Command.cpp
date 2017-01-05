@@ -1,8 +1,10 @@
 #include "Command.h"
 #include <unistd.h>
+#include <typeinfo>
 
 namespace trickfire {
 vector<Command*> Command::runningCommands;
+sf::Mutex Command::mut_runningCommands;
 
 Command::Command() :
 		runningTime(0.0f), deltaTime(0.0f), _startTime(0.0f), _prevTime(0.0f), running(false), sfmlThread(&Command::CommandThreadLoop, this) {
@@ -27,12 +29,14 @@ void Command::CommandThreadLoop(Command * command) {
 }
 
 void Command::StopAllCommands() {
+	sf::Lock(&Command::mut_runningCommands);
 	while (runningCommands.size() == 0) {
 		runningCommands[0]->Stop();
 	}
 }
 
 void Command::Start() {
+	sf::Lock(&Command::mut_runningCommands);
 	runningCommands.push_back(this);
 	sfmlThread.launch();
 	_startTime = duration_cast<milliseconds>(
@@ -74,6 +78,7 @@ string Command::GetDisplayName() {
 }
 
 void Command::CleanUpList() {
+	sf::Lock(&Command::mut_runningCommands);
 	runningCommands.erase(
 			std::remove_if(runningCommands.begin(), runningCommands.end(),
 					Command::IsDone));

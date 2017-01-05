@@ -18,6 +18,7 @@ namespace trickfire {
 class Command {
 public:
 	Command();
+	virtual ~Command() {};
 
 	static void StopAllCommands();
 
@@ -29,6 +30,7 @@ public:
 	inline float GetRunningTime() { return runningTime; }
 
 	static vector<Command*> runningCommands;
+	static sf::Mutex mut_runningCommands;
 protected:
 	virtual void UpdatePeriodic();
 	virtual void OnInitialize();

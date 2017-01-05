@@ -14,11 +14,12 @@ namespace trickfire {
 double Driver::forwards;
 double Driver::rotation;
 
-StandardDriveCommand Driver::standardDrive(&forwards, &rotation);
+//StandardDriveCommand Driver::standardDrive(&forwards, &rotation);
 Command * Driver::driveCommand;
 
 void Driver::OnNonDefaultDriveFinish() {
-	driveCommand = &standardDrive;
+	StandardDriveCommand stan(&forwards, &rotation);
+	driveCommand = &stan;
 	driveCommand->Start();
 }
 
@@ -112,7 +113,8 @@ void Driver::Start() {
 
 	RobotIO::Start();
 
-	driveCommand = &Driver::standardDrive;
+	StandardDriveCommand stan(&forwards, &rotation);
+	driveCommand = &stan;
 	driveCommand->Start();
 
 #if defined(UI_ENABLED) and UI_ENABLED
