@@ -14,9 +14,12 @@
 namespace trickfire {
 sf::Thread RobotIO::commThread(&RobotIO::ThreadLoop);
 map<unsigned char, double> RobotIO::motorValues;
+sf::Mutex RobotIO::mutex_motorValues;
+bool RobotIO::_running = false;
 int RobotIO::psocFD;
 
 void RobotIO::SetMotor(unsigned char motorId, double value) {
+	sf::Lock motorValuesLock (mutex_motorValues);
 	motorValues[motorId] = value;
 }
 
@@ -34,10 +37,12 @@ void RobotIO::Start() {
 	psocFD = open(PSOC_PORT, O_RDWR);
 	if (psocFD == -1) {
 		Logger::Log(Logger::LEVEL_ERROR_CRITICAL, "Failed to open PSoC port");
+		return;
 	}
 
 	if (!isatty(psocFD)) {
 		Logger::Log(Logger::LEVEL_ERROR_CRITICAL, "PSoC port not TTY");
+		return;
 	}
 
 	struct termios tio;
@@ -45,6 +50,7 @@ void RobotIO::Start() {
 	if (tcgetattr(psocFD, &tio) < 0) {
 		Logger::Log(Logger::LEVEL_ERROR_CRITICAL,
 				"Error getting PSoC attributes");
+		return;
 	}
 
 	tio.c_iflag = 0;
@@ -56,30 +62,40 @@ void RobotIO::Start() {
 
 	if (cfsetispeed(&tio, B9600) < 0 || cfsetospeed(&tio, B9600) < 0) {
 		Logger::Log(Logger::LEVEL_ERROR_CRITICAL, "Error setting PSoC baud");
+		return;
 	}
 
 	if (tcsetattr(psocFD, TCSAFLUSH, &tio) < 0) {
 		Logger::Log(Logger::LEVEL_ERROR_CRITICAL,
 				"Error setting PSoC attributes");
+		return;
 	}
 
 	commThread.launch();
+	_running = true;
 }
 
 void RobotIO::Stop() {
+	// TODO: Stop the thread!
 	close(psocFD);
+	_running = false;
 }
 
 void RobotIO::ThreadLoop() {
-	while (true) {
+	while (_running) {
 		// TODO: Make periodic (add a delay)
 		// TODO: Reserved char values for something special (disabled or something?)
 		for (map<unsigned char, double>::iterator iterator =
 				motorValues.begin(); iterator != motorValues.end();
 				iterator++) {
-			SendPSoCByte(iterator->first);
-			usleep(PSOC_SEND_DELAY);
+
+			mutex_motorValues.lock();
 			unsigned char pwm = DoubleToPWM(iterator->second);
+			unsigned char key = iterator->first;
+			mutex_motorValues.unlock();
+
+			SendPSoCByte(key);
+			usleep(PSOC_SEND_DELAY);
 			if (pwm == 0)
 				pwm = 1;
 			SendPSoCByte(pwm);

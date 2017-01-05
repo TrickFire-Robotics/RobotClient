@@ -32,6 +32,9 @@ public:
 
 private:
 	static map<unsigned char, double> motorValues;
+	static sf::Mutex mutex_motorValues;
+
+	static bool _running;
 
 	static sf::Thread commThread;
 
