@@ -6,6 +6,9 @@
 #include "DrawingUtil.h"
 
 #include "RobotIO.h"
+#include "Command.h"
+#include "TestCommand.h"
+#include "TestCommand2.h"
 
 #include <iostream>
 #include <SFML/Window.hpp>

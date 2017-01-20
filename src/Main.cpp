@@ -13,11 +13,18 @@ namespace trickfire {
 double Main::forwards;
 double Main::rotation;
 
+Command * comm;
+TestCommand2 tc2;
+
 void Main::Start() {
 	RobotIO::Start();
 
 	Client client("127.0.0.1", 25565);
 	client.SetMessageCallback(Main::OnClientMessageReceived);
+
+	TestCommand tcomm;
+	comm = &tcomm;
+	comm->Start();
 
 #if defined(GUI_ENABLED) and GUI_ENABLED
 	sf::Thread windowThread(SfmlWindowThread);
@@ -26,6 +33,8 @@ void Main::Start() {
 #else
 	client.Join();
 #endif
+
+	comm->Stop();
 
 	client.Disconnect();
 	RobotIO::Stop();
@@ -40,6 +49,12 @@ void Main::OnClientMessageReceived(Packet& packet) {
 		RobotIO::SimpleArcade(forwards, rotation);
 
 		cout << "Driving: " << forwards << ", " << rotation << endl;
+		break;
+	case AUTO_PACKET_1:
+		comm->Stop();
+		cout << "Starting auto command" << endl;
+		comm = &tc2;
+		comm->Start();
 		break;
 	}
 }
