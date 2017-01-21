@@ -4,6 +4,8 @@
 #include <vector>
 #include <SFML/System.hpp>
 #include <iostream>
+#include <chrono>
+#include <unistd.h>
 
 namespace trickfire {
 
@@ -18,13 +20,17 @@ public:
 	void Start();
 	bool IsRunning() { return running; }
 	void Stop();
+	float GetRunningTime();
 protected:
 	virtual void Update() = 0;
 	virtual bool IsFinished() = 0; // TODO: Better names to distinguish between "finished" and "running"
 	static bool _IsDone(Command * comm) { return !comm->IsRunning(); }
 	void OnFinish();
+	float GetDeltaTime();
 private:
-
+	long _startTime;
+	long _prevTime;
+	float deltaTime;
 	sf::Thread cmdThread;
 	bool running;
 
