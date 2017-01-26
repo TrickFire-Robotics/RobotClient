@@ -6,11 +6,15 @@
 namespace trickfire {
 std::vector<Command *> Command::runningCommands;
 sf::Mutex Command::mutex_runningCommands;
+bool Command::killAll;
 
 Command::Command() :
 		_startTime(0.0f), _prevTime(0.0f), deltaTime(0.0f), cmdThread(
 				&Command::ThreadMethod, this), running(false) {
-
+	mutex_runningCommands.lock();
+	runningCommands.push_back(this);
+	mutex_runningCommands.unlock();
+	cmdThread.launch();
 }
 
 Command::~Command() {
@@ -18,21 +22,22 @@ Command::~Command() {
 }
 
 void Command::Start() {
-	mutex_runningCommands.lock();
-	runningCommands.push_back(this);
-	mutex_runningCommands.unlock();
 	_startTime = CURRENT_TIME;
 	_prevTime = CURRENT_TIME;
 	running = true;
-	cmdThread.launch();
 }
 
 void Command::Stop() {
-	//std::cout << "Stopping" << std::endl;
-	running = false;
-	OnFinish();
+	std::cout << "Stopping" << std::endl;
+	if (running) {
+		running = false;
+		OnFinish();
+	}
+	_startTime = 0.0f;
+	_prevTime = 0.0f;
+	deltaTime = 0.0f;
 
-	CleanUpRunningCommList();
+	//CleanUpRunningCommList();
 }
 
 void Command::OnFinish() {
@@ -40,17 +45,22 @@ void Command::OnFinish() {
 }
 
 void Command::ThreadMethod(Command * command) {
-	while (command->running && !command->IsFinished()) {
-		long timediff = CURRENT_TIME- command->_prevTime;
-		command->deltaTime = (float) timediff / TIME_DIVIDER;
-		command->_prevTime = CURRENT_TIME;
+	while (!Command::killAll) {
+		bool needsToStop = false;
+		while (!Command::killAll && command->running && !command->IsFinished()) {
+			needsToStop = true;
+			long timediff = CURRENT_TIME- command->_prevTime;
+			command->deltaTime = (float) timediff / TIME_DIVIDER;
+			command->_prevTime = CURRENT_TIME;
 
-		command->Update();
+			command->Update();
+		}
+		if (needsToStop && command->running) { // To prevent a doublestop (heyyy, drumming joke)
+			std::cout << "Auto-stopping" << std::endl;
+			command->Stop();
+			needsToStop = false;
+		}
 	}
-	if (command->running) { // To prevent a doublestop (heyyy, drumming joke)
-		command->Stop();
-	}
-
 }
 
 void Command::CleanUpRunningCommList() {

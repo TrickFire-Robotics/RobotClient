@@ -4,6 +4,7 @@
 #include "Client.h"
 #include "NetworkingConstants.h"
 #include "DrawingUtil.h"
+#include "Logger.h"
 
 #include "RobotIO.h"
 #include "Command.h"

@@ -21,11 +21,13 @@ public:
 	bool IsRunning() { return running; }
 	void Stop();
 	float GetRunningTime();
+
+	static inline void KillAll() { killAll = true; }
 protected:
 	virtual void Update() = 0;
 	virtual bool IsFinished() = 0; // TODO: Better names to distinguish between "finished" and "running"
 	static bool _IsDone(Command * comm) { return !comm->IsRunning(); }
-	void OnFinish();
+	virtual void OnFinish();
 	float GetDeltaTime();
 private:
 	long _startTime;
@@ -33,6 +35,8 @@ private:
 	float deltaTime;
 	sf::Thread cmdThread;
 	bool running;
+
+	static bool killAll;
 
 	static void ThreadMethod(Command * command);
 

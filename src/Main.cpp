@@ -16,6 +16,7 @@ StandardDriveCommand standardDrive;
 AutoDriveCommand1 autoDrive1;
 
 void Main::Start() {
+	Logger::SetLoggingLevel(Logger::LEVEL_INFO_FINE);
 	RobotIO::Start();
 
 	Client client("127.0.0.1", 25565);
@@ -33,6 +34,7 @@ void Main::Start() {
 #endif
 
 	drivebase->Stop();
+	Command::KillAll();
 
 	client.Disconnect();
 	RobotIO::Stop();
@@ -40,7 +42,6 @@ void Main::Start() {
 
 void Main::ResumeStandardDrive() {
 	drivebase->Stop();
-
 	drivebase = &standardDrive;
 	drivebase->Start();
 }

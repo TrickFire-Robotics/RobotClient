@@ -11,7 +11,7 @@ class AutoDriveCommand1: public Command {
 public:
 	void Update() override;
 	bool IsFinished() override;
-	void OnFinish();
+	void OnFinish() override;
 };
 }
 
