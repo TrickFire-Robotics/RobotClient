@@ -1,5 +1,6 @@
 #include "RobotIO.h"
 #include "Logger.h"
+#include "DisplayVariables.h"
 #include <unistd.h>
 #include <chrono>
 #include <thread>
@@ -31,6 +32,9 @@ void RobotIO::SimpleArcade(double forwards, double rot) {
 	SetMotor(REAR_LEFT, left);
 	SetMotor(FRONT_RIGHT, right);
 	SetMotor(REAR_RIGHT, right);
+
+	DisplayVariables::SetDrive(forwards);
+	DisplayVariables::SetRot(rot);
 }
 
 void RobotIO::Start() {

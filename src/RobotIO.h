@@ -42,7 +42,7 @@ private:
 
 	static void ThreadLoop();
 
-	// PWM = 0 to 254, this converts from 127 being zero, 0 being full reverse, and 254 being full forwards
+	// PWM = 0 to 254, this converts from 128 being zero, 0 being full reverse, and 254 being full forwards
 	static inline double PWMToDouble(unsigned char pwm) {
 		return (double) (pwm - 127) / 127;
 	}

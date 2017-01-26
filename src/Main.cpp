@@ -10,11 +10,10 @@
 #define ROW3 128
 
 namespace trickfire {
-double Main::forwards;
-double Main::rotation;
 
-Command * comm;
-TestCommand2 tc2;
+Command * drivebase;
+StandardDriveCommand standardDrive;
+AutoDriveCommand1 autoDrive1;
 
 void Main::Start() {
 	RobotIO::Start();
@@ -22,9 +21,8 @@ void Main::Start() {
 	Client client("127.0.0.1", 25565);
 	client.SetMessageCallback(Main::OnClientMessageReceived);
 
-	TestCommand tcomm;
-	comm = &tcomm;
-	comm->Start();
+	drivebase = &standardDrive;
+	standardDrive.Start();
 
 #if defined(GUI_ENABLED) and GUI_ENABLED
 	sf::Thread windowThread(SfmlWindowThread);
@@ -34,27 +32,38 @@ void Main::Start() {
 	client.Join();
 #endif
 
-	comm->Stop();
+	drivebase->Stop();
 
 	client.Disconnect();
 	RobotIO::Stop();
 }
 
+void Main::ResumeStandardDrive() {
+	drivebase->Stop();
+
+	drivebase = &standardDrive;
+	drivebase->Start();
+}
+
 void Main::OnClientMessageReceived(Packet& packet) {
 	int type = -1;
 	packet >> type;
+	std::cout << "Receiving packet!" << std::endl;
 	switch (type) {
 	case DRIVE_PACKET:
+		double forwards;
+		double rotation;
 		packet >> forwards >> rotation;
-		RobotIO::SimpleArcade(forwards, rotation);
-
-		cout << "Driving: " << forwards << ", " << rotation << endl;
+		standardDrive.SetVals(forwards, rotation);
 		break;
 	case AUTO_PACKET_1:
-		comm->Stop();
+		drivebase->Stop();
 		cout << "Starting auto command" << endl;
-		comm = &tc2;
-		comm->Start();
+		drivebase = &autoDrive1;
+		drivebase->Start();
+		break;
+	default:
+
 		break;
 	}
 }
@@ -84,14 +93,14 @@ void Main::SfmlWindowThread() {
 
 		Vector2f forwLabelSize = DrawingUtil::DrawGenericHeader("Rot.",
 				Vector2f(COL1, ROW1), false, wlmCarton, Color::Green, window);
-		DrawingUtil::DrawCenteredAxisBar(rotation,
+		DrawingUtil::DrawCenteredAxisBar(DisplayVariables::GetRot(),
 				Vector2f(COL1 + (forwLabelSize.x / 2) - 20, ROW2),
 				Vector2f(40, 264), Vector2f(4, 4), background, Color::Green,
 				window);
 
-		Vector2f rotLabelSize = DrawingUtil::DrawGenericHeader("Forw.",
+		Vector2f rotLabelSize = DrawingUtil::DrawGenericHeader("Drv.",
 				Vector2f(COL2, ROW1), false, wlmCarton, Color::Green, window);
-		DrawingUtil::DrawCenteredAxisBar(forwards,
+		DrawingUtil::DrawCenteredAxisBar(DisplayVariables::GetDrive(),
 				Vector2f(COL2 + (rotLabelSize.x / 2) - 20, ROW2),
 				Vector2f(40, 264), Vector2f(4, 4), background, Color::Green,
 				window);

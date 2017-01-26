@@ -7,8 +7,10 @@
 
 #include "RobotIO.h"
 #include "Command.h"
-#include "TestCommand.h"
-#include "TestCommand2.h"
+#include "DisplayVariables.h"
+
+#include "StandardDriveCommand.h"
+#include "AutoDriveCommand1.h"
 
 #include <iostream>
 #include <SFML/Window.hpp>
@@ -22,9 +24,9 @@ class Main {
 public:
 	static void Start();
 
-private:
-	static double forwards, rotation;
+	static void ResumeStandardDrive();
 
+private:
 	static void OnClientMessageReceived(Packet& packet);
 
 	static void SfmlWindowThread();

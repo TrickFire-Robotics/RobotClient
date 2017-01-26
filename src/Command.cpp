@@ -28,7 +28,7 @@ void Command::Start() {
 }
 
 void Command::Stop() {
-	std::cout << "Stopping" << std::endl;
+	//std::cout << "Stopping" << std::endl;
 	running = false;
 	OnFinish();
 
