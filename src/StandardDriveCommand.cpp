@@ -2,7 +2,6 @@
 
 namespace trickfire {
 void StandardDriveCommand::Update() {
-	std::cout << "Updating drive! " << forward << ", " << rot << std::endl;
 	RobotIO::SimpleArcade(forward, rot);
 }
 

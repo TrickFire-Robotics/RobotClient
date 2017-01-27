@@ -16,6 +16,7 @@
 #include <iostream>
 #include <SFML/Window.hpp>
 #include <SFML/Graphics.hpp>
+#include <opencv.hpp>
 
 using namespace std;
 

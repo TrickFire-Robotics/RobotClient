@@ -2,7 +2,6 @@
 
 namespace trickfire {
 	void AutoDriveCommand1::Update() {
-		//std::cout << "Updating ADC1" << std::endl;
 		RobotIO::SimpleArcade(0.25, 0.0);
 	}
 
@@ -11,7 +10,6 @@ namespace trickfire {
 	}
 
 	void AutoDriveCommand1::OnFinish() {
-		std::cout << "Finishing ADC1" << std::endl;
 		RobotIO::SimpleArcade(0.0, 0.0);
 		Main::ResumeStandardDrive();
 	}
