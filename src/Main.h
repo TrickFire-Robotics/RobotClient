@@ -12,6 +12,7 @@
 
 #include "StandardDriveCommand.h"
 #include "AutoDriveCommand1.h"
+#include "CameraSendCommand.h"
 
 #include <iostream>
 #include <SFML/Window.hpp>

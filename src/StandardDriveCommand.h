@@ -8,6 +8,7 @@ namespace trickfire {
 
 class StandardDriveCommand: public Command {
 public:
+	void OnStart() override;
 	void Update() override;
 	bool IsFinished() override;
 

@@ -16,11 +16,11 @@ StandardDriveCommand standardDrive;
 AutoDriveCommand1 autoDrive1;
 
 cv::Mat frameRGB;
-cv::Mat frameRGBA;
+/*cv::Mat frameRGBA;
 sf::Image image;
 sf::Texture texture;
 sf::Sprite sprite;
-sf::Mutex mutex_cameraVars;
+sf::Mutex mutex_cameraVars;*/
 
 void Main::Start() {
 	Logger::SetLoggingLevel(Logger::LEVEL_INFO_FINE);
@@ -29,8 +29,11 @@ void Main::Start() {
 	Client client("127.0.0.1", 25565);
 	client.SetMessageCallback(Main::OnClientMessageReceived);
 
+	CameraSendCommand cameraCommand(&client);
+
 	drivebase = &standardDrive;
 	standardDrive.Start();
+	cameraCommand.Start();
 
 #if defined(GUI_ENABLED) and GUI_ENABLED
 	sf::Thread windowThread(SfmlWindowThread);
@@ -70,23 +73,6 @@ void Main::OnClientMessageReceived(Packet& packet) {
 		drivebase = &autoDrive1;
 		drivebase->Start();
 		break;
-	case CAMERA_PACKET: {
-		int rows, cols;
-		packet >> rows >> cols;
-		mutex_cameraVars.lock();
-		frameRGB = cv::Mat(rows, cols, 16);
-		uint8_t* newdata = (uint8_t*) frameRGB.data;
-
-		for (int y = 0; y < frameRGB.rows; y++) {
-			for (int x = 0; x < frameRGB.cols; x++) {
-				packet >> newdata[y * frameRGB.cols * 3 + x * 3 + 0];
-				packet >> newdata[y * frameRGB.cols * 3 + x * 3 + 1];
-				packet >> newdata[y * frameRGB.cols * 3 + x * 3 + 2];
-			}
-		}
-		mutex_cameraVars.unlock();
-		break;
-	}
 	default:
 
 		break;
@@ -129,22 +115,6 @@ void Main::SfmlWindowThread() {
 				Vector2f(COL2 + (rotLabelSize.x / 2) - 20, ROW2),
 				Vector2f(40, 264), Vector2f(4, 4), background, Color::Green,
 				window);
-
-		mutex_cameraVars.lock();
-		if (!frameRGB.empty()) {
-			cv::cvtColor(frameRGB, frameRGBA, cv::COLOR_BGR2RGBA);
-			image.create(frameRGBA.cols, frameRGBA.rows, frameRGBA.ptr());
-			if (texture.loadFromImage(image)) {
-				sprite.setTexture(texture);
-
-				int targetSize = 320;
-				sprite.setPosition(COL1, ROW3);
-				sprite.setScale((double) targetSize / texture.getSize().x,
-						(double) targetSize / texture.getSize().x);
-				window.draw(sprite);
-			}
-		}
-		mutex_cameraVars.unlock();
 
 		window.display();
 	}

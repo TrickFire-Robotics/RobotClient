@@ -24,6 +24,7 @@ public:
 
 	static inline void KillAll() { killAll = true; }
 protected:
+	virtual void OnStart() = 0;
 	virtual void Update() = 0;
 	virtual bool IsFinished() = 0; // TODO: Better names to distinguish between "finished" and "running"
 	static bool _IsDone(Command * comm) { return !comm->IsRunning(); }

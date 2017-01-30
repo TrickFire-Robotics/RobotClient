@@ -1,6 +1,10 @@
 #include "AutoDriveCommand1.h"
 
 namespace trickfire {
+	void AutoDriveCommand1::OnStart() {
+
+	}
+
 	void AutoDriveCommand1::Update() {
 		RobotIO::SimpleArcade(0.25, 0.0);
 	}

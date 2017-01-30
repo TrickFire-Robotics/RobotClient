@@ -22,9 +22,13 @@ Command::~Command() {
 }
 
 void Command::Start() {
-	_startTime = CURRENT_TIME;
-	_prevTime = CURRENT_TIME;
-	running = true;
+	if (!running) {
+		_startTime = CURRENT_TIME;
+		_prevTime = CURRENT_TIME;
+		running = true;
+	}
+
+	OnStart();
 }
 
 void Command::Stop() {
