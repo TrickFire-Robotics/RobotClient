@@ -15,13 +15,6 @@ Command * drivebase;
 StandardDriveCommand standardDrive;
 AutoDriveCommand1 autoDrive1;
 
-cv::Mat frameRGB;
-/*cv::Mat frameRGBA;
-sf::Image image;
-sf::Texture texture;
-sf::Sprite sprite;
-sf::Mutex mutex_cameraVars;*/
-
 void Main::Start() {
 	Logger::SetLoggingLevel(Logger::LEVEL_INFO_FINE);
 	RobotIO::Start();
@@ -29,11 +22,8 @@ void Main::Start() {
 	Client client("127.0.0.1", 25565);
 	client.SetMessageCallback(Main::OnClientMessageReceived);
 
-	CameraSendCommand cameraCommand(&client);
-
 	drivebase = &standardDrive;
 	standardDrive.Start();
-	cameraCommand.Start();
 
 #if defined(GUI_ENABLED) and GUI_ENABLED
 	sf::Thread windowThread(SfmlWindowThread);
@@ -68,10 +58,12 @@ void Main::OnClientMessageReceived(Packet& packet) {
 		standardDrive.SetVals(forwards, rotation);
 		break;
 	case AUTO_PACKET_1:
-		drivebase->Stop();
-		cout << "Starting auto command" << endl;
-		drivebase = &autoDrive1;
-		drivebase->Start();
+		if (drivebase != &autoDrive1) {
+			drivebase->Stop();
+			cout << "Starting auto command" << endl;
+			drivebase = &autoDrive1;
+			drivebase->Start();
+		}
 		break;
 	default:
 
