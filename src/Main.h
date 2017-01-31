@@ -4,12 +4,20 @@
 #include "Client.h"
 #include "NetworkingConstants.h"
 #include "DrawingUtil.h"
+#include "Logger.h"
 
 #include "RobotIO.h"
+#include "Command.h"
+#include "DisplayVariables.h"
+
+#include "StandardDriveCommand.h"
+#include "AutoDriveCommand1.h"
+#include "CameraSendCommand.h"
 
 #include <iostream>
 #include <SFML/Window.hpp>
 #include <SFML/Graphics.hpp>
+#include <opencv.hpp>
 
 using namespace std;
 
@@ -19,9 +27,9 @@ class Main {
 public:
 	static void Start();
 
-private:
-	static double forwards, rotation;
+	static void ResumeStandardDrive();
 
+private:
 	static void OnClientMessageReceived(Packet& packet);
 
 	static void SfmlWindowThread();
