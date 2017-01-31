@@ -17,10 +17,10 @@ AutoDriveCommand1 autoDrive1;
 
 cv::Mat frameRGB;
 /*cv::Mat frameRGBA;
-sf::Image image;
-sf::Texture texture;
-sf::Sprite sprite;
-sf::Mutex mutex_cameraVars;*/
+ sf::Image image;
+ sf::Texture texture;
+ sf::Sprite sprite;
+ sf::Mutex mutex_cameraVars;*/
 
 void Main::Start() {
 	Logger::SetLoggingLevel(Logger::LEVEL_INFO_FINE);
@@ -51,9 +51,11 @@ void Main::Start() {
 }
 
 void Main::ResumeStandardDrive() {
-	drivebase->Stop();
-	drivebase = &standardDrive;
-	drivebase->Start();
+	if (drivebase != &standardDrive) {
+		drivebase->Stop();
+		drivebase = &standardDrive;
+		drivebase->Start();
+	}
 }
 
 void Main::OnClientMessageReceived(Packet& packet) {
@@ -68,10 +70,12 @@ void Main::OnClientMessageReceived(Packet& packet) {
 		standardDrive.SetVals(forwards, rotation);
 		break;
 	case AUTO_PACKET_1:
-		drivebase->Stop();
-		cout << "Starting auto command" << endl;
-		drivebase = &autoDrive1;
-		drivebase->Start();
+		if (drivebase != &autoDrive1) {
+			drivebase->Stop();
+			cout << "Starting auto command" << endl;
+			drivebase = &autoDrive1;
+			drivebase->Start();
+		}
 		break;
 	default:
 
