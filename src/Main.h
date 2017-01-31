@@ -12,10 +12,12 @@
 
 #include "StandardDriveCommand.h"
 #include "AutoDriveCommand1.h"
+#include "CameraSendCommand.h"
 
 #include <iostream>
 #include <SFML/Window.hpp>
 #include <SFML/Graphics.hpp>
+#include <opencv.hpp>
 
 using namespace std;
 
