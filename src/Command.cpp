@@ -4,16 +4,11 @@
 #define TIME_DIVIDER 1000000
 
 namespace trickfire {
-std::vector<Command *> Command::runningCommands;
-sf::Mutex Command::mutex_runningCommands;
 bool Command::killAll;
 
 Command::Command() :
 		_startTime(0.0f), _prevTime(0.0f), deltaTime(0.0f), cmdThread(
 				&Command::ThreadMethod, this), running(false) {
-	mutex_runningCommands.lock();
-	runningCommands.push_back(this);
-	mutex_runningCommands.unlock();
 	cmdThread.launch();
 }
 
@@ -40,8 +35,6 @@ void Command::Stop() {
 	_startTime = 0.0f;
 	_prevTime = 0.0f;
 	deltaTime = 0.0f;
-
-	//CleanUpRunningCommList();
 }
 
 void Command::OnFinish() {
@@ -65,18 +58,6 @@ void Command::ThreadMethod(Command * command) {
 			needsToStop = false;
 		}
 	}
-}
-
-void Command::CleanUpRunningCommList() {
-	mutex_runningCommands.lock();
-	if (runningCommands.size() > 0) {
-		runningCommands.erase(
-				std::remove_if(runningCommands.begin(), runningCommands.end(),
-						Command::_IsDone));
-	}
-	std::cout << "Cleaned up list, running commands count is now: "
-			<< runningCommands.size() << std::endl;
-	mutex_runningCommands.unlock();
 }
 
 float Command::GetRunningTime() {

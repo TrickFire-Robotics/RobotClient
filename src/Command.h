@@ -14,9 +14,6 @@ public:
 	Command();
 	virtual ~Command();
 
-	static std::vector<Command *> runningCommands;
-	static sf::Mutex mutex_runningCommands;
-
 	void Start();
 	bool IsRunning() { return running; }
 	void Stop();
@@ -40,8 +37,6 @@ private:
 	static bool killAll;
 
 	static void ThreadMethod(Command * command);
-
-	static void CleanUpRunningCommList();
 };
 }
 
