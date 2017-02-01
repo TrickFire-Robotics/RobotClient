@@ -28,8 +28,8 @@ protected:
 	virtual void OnFinish();
 	float GetDeltaTime();
 private:
-	long _startTime;
-	long _prevTime;
+	long long _startTime;
+	long long _prevTime;
 	float deltaTime;
 	sf::Thread cmdThread;
 	bool running;
