@@ -1,6 +1,7 @@
 #include "Main.h"
 
 #define GUI_ENABLED true
+#define SERVER_IP "127.0.0.1"
 
 #define COL1 128
 #define COL2 300
@@ -26,7 +27,7 @@ void Main::Start() {
 	Logger::SetLoggingLevel(Logger::LEVEL_INFO_FINE);
 	RobotIO::Start();
 
-	Client client("127.0.0.1", 25565);
+	Client client(SERVER_IP, 25565);
 	client.SetMessageCallback(Main::OnClientMessageReceived);
 
 	CameraSendCommand cameraCommand(&client);
