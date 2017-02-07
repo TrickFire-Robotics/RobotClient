@@ -4,7 +4,7 @@
 
 namespace trickfire {
 CameraSendCommand::CameraSendCommand(Client * client) :
-		_client(client), cap(1) {
+		_client(client), cap(-1) {
 
 }
 
@@ -18,7 +18,7 @@ void CameraSendCommand::OnFinish() {
 
 void CameraSendCommand::Update() {
 	cap >> frameRGB;
-	double scale = 0.5;
+	double scale = 0.15;
 	cv::resize(frameRGB, frameRGB, cv::Size(0, 0), scale, scale);
 	Packet camPacket;
 	camPacket << CAMERA_PACKET;
