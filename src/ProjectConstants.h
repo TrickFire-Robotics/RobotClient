@@ -3,10 +3,17 @@
 
 namespace trickfire {
 
+#ifndef GUI_ENABLED
 #define GUI_ENABLED true
-#define SERVER_IP "127.0.0.1"
+#endif
 
+#ifndef SERVER_IP
+#define SERVER_IP "127.0.0.1"
+#endif
+
+#ifndef OPENCV
 #define OPENCV true
+#endif
 
 class ProjectConstants {
 };
