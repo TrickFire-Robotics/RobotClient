@@ -17,7 +17,11 @@
 #include <iostream>
 #include <SFML/Window.hpp>
 #include <SFML/Graphics.hpp>
+
+#include "ProjectConstants.h"
+#if OPENCV
 #include <opencv.hpp>
+#endif
 
 using namespace std;
 

@@ -1,6 +1,10 @@
 #ifndef CAMERASENDCOMMAND_H_
 #define CAMERASENDCOMMAND_H_
 
+#include "ProjectConstants.h"
+
+#if OPENCV
+
 #include "Command.h"
 #include "Client.h"
 #include "NetworkingConstants.h"
@@ -23,5 +27,7 @@ private:
 	cv::Mat frameRGB;
 };
 }
+
+#endif
 
 #endif

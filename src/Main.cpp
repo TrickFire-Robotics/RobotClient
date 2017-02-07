@@ -1,8 +1,5 @@
 #include "Main.h"
 
-#define GUI_ENABLED true
-#define SERVER_IP "127.0.0.1"
-
 #define COL1 128
 #define COL2 300
 
@@ -16,12 +13,14 @@ Command * drivebase;
 StandardDriveCommand standardDrive;
 AutoDriveCommand1 autoDrive1;
 
+#if OPENCV
 cv::Mat frameRGB;
 /*cv::Mat frameRGBA;
  sf::Image image;
  sf::Texture texture;
  sf::Sprite sprite;
  sf::Mutex mutex_cameraVars;*/
+#endif
 
 void Main::Start() {
 	Logger::SetLoggingLevel(Logger::LEVEL_INFO_FINE);
@@ -30,11 +29,13 @@ void Main::Start() {
 	Client client(SERVER_IP, 25565);
 	client.SetMessageCallback(Main::OnClientMessageReceived);
 
-	CameraSendCommand cameraCommand(&client);
-
 	drivebase = &standardDrive;
 	standardDrive.Start();
+
+#if OPENCV
+	CameraSendCommand cameraCommand(&client);
 	cameraCommand.Start();
+#endif
 
 #if defined(GUI_ENABLED) and GUI_ENABLED
 	sf::Thread windowThread(SfmlWindowThread);
