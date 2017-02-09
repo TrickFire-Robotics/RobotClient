@@ -15,6 +15,14 @@ namespace trickfire {
 #define OPENCV true
 #endif
 
+#ifndef CAMERA
+#define CAMERA true
+#endif
+
+#ifndef KINECT
+#define KINECT true
+#endif
+
 class ProjectConstants {
 };
 }

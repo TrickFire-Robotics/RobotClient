@@ -33,8 +33,25 @@ void Main::Start() {
 	standardDrive.Start();
 
 #if OPENCV
+#if CAMERA
 	CameraSendCommand cameraCommand(&client);
 	cameraCommand.Start();
+#endif
+#if KINECT
+	Freenect::Freenect freenect;
+
+	TFFreenect& temp = freenect.createDevice<TFFreenect>(0);
+	temp.startVideo();
+	temp.stopVideo();
+	freenect.deleteDevice(0);
+
+	TFFreenect& kinect = freenect.createDevice<TFFreenect>(0);
+	kinect.setLed(LED_GREEN);
+	KinectSendCommand kinectCommand(&client, kinect);
+	kinectCommand.Start();
+	kinect.setTiltDegrees(0);
+	kinect.updateState();
+#endif
 #endif
 
 #if defined(GUI_ENABLED) and GUI_ENABLED
@@ -50,6 +67,12 @@ void Main::Start() {
 
 	client.Disconnect();
 	RobotIO::Stop();
+
+#if KINECT
+	kinect.stopVideo();
+	kinect.stopDepth();
+	kinect.setLed(LED_RED);
+#endif
 }
 
 void Main::ResumeStandardDrive() {

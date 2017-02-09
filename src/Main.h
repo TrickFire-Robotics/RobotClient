@@ -13,6 +13,7 @@
 #include "StandardDriveCommand.h"
 #include "AutoDriveCommand1.h"
 #include "CameraSendCommand.h"
+#include "KinectSendCommand.h"
 
 #include <iostream>
 #include <SFML/Window.hpp>
@@ -21,6 +22,9 @@
 #include "ProjectConstants.h"
 #if OPENCV
 #include <opencv.hpp>
+#endif
+#if KINECT
+#include <libfreenect.hpp>
 #endif
 
 using namespace std;
