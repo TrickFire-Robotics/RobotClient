@@ -18,7 +18,7 @@ namespace trickfire {
 
 class KinectSendCommand: public Command {
 public:
-	KinectSendCommand(Client * client, TFFreenect& kinect);
+	KinectSendCommand(Client * client, sf::Mutex * mut_client, TFFreenect& kinect);
 
 	void OnStart() override;
 	void OnFinish() override;
@@ -27,9 +27,15 @@ public:
 
 private:
 	Client * _client;
+	sf::Mutex * mut_client;
 	TFFreenect& device;
 	cv::Mat frameRGBOrig;
 	cv::Mat frameRGBFixed;
+	cv::Mat depthOrig;
+	cv::Mat depthReformat;
+	cv::Mat depthRGB;
+	cv::Mat depthFixed;
+	double _last_time;
 };
 }
 

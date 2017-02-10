@@ -14,7 +14,7 @@ StandardDriveCommand standardDrive;
 AutoDriveCommand1 autoDrive1;
 
 #if OPENCV
-cv::Mat frameRGB;
+//cv::Mat frameRGB;
 /*cv::Mat frameRGBA;
  sf::Image image;
  sf::Texture texture;
@@ -27,6 +27,7 @@ void Main::Start() {
 	RobotIO::Start();
 
 	Client client(SERVER_IP, 25565);
+	sf::Mutex mut_client;
 	client.SetMessageCallback(Main::OnClientMessageReceived);
 
 	drivebase = &standardDrive;
@@ -34,7 +35,7 @@ void Main::Start() {
 
 #if OPENCV
 #if CAMERA
-	CameraSendCommand cameraCommand(&client);
+	CameraSendCommand cameraCommand(&client, &mut_client);
 	cameraCommand.Start();
 #endif
 #if KINECT
@@ -47,7 +48,7 @@ void Main::Start() {
 
 	TFFreenect& kinect = freenect.createDevice<TFFreenect>(0);
 	kinect.setLed(LED_GREEN);
-	KinectSendCommand kinectCommand(&client, kinect);
+	KinectSendCommand kinectCommand(&client, &mut_client, kinect);
 	kinectCommand.Start();
 	kinect.setTiltDegrees(0);
 	kinect.updateState();

@@ -14,7 +14,7 @@ namespace trickfire {
 
 class CameraSendCommand: public Command {
 public:
-	CameraSendCommand(Client * client);
+	CameraSendCommand(Client * client, sf::Mutex * mut_client);
 
 	void OnStart() override;
 	void OnFinish() override;
@@ -23,8 +23,10 @@ public:
 
 private:
 	Client * _client;
+	sf::Mutex * mut_client;
 	cv::VideoCapture cap;
 	cv::Mat frameRGB;
+	double _last_time;
 };
 }
 
