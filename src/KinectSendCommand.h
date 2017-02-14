@@ -3,6 +3,8 @@
 
 #include "ProjectConstants.h"
 
+#if KINECT
+
 #include "TFFreenect.h"
 
 #include <libfreenect.hpp>
@@ -38,6 +40,8 @@ private:
 	double _last_time;
 };
 }
+
+#endif
 
 #endif
 

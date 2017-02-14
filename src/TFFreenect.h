@@ -1,6 +1,11 @@
 #ifndef TFFREENECT_H_
 #define TFFREENECT_H_
 
+#include "ProjectConstants.h"
+
+#if OPENCV
+#if KINECT
+
 #include <libfreenect.hpp>
 #include <opencv.hpp>
 #include <SFML/System.hpp>
@@ -30,4 +35,6 @@ private:
 };
 }
 
+#endif
+#endif
 #endif

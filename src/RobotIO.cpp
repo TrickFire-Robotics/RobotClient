@@ -5,7 +5,7 @@
 #include <chrono>
 #include <thread>
 
-#define PSOC_SEND_DELAY 50
+#define PSOC_SEND_DELAY 100
 
 #define FRONT_LEFT 'a'
 #define FRONT_RIGHT 'b'
@@ -28,8 +28,8 @@ void RobotIO::SimpleArcade(double forwards, double rot) {
 	double left = min(max(forwards + rot, -1.0), 1.0);
 	double right = min(max(forwards - rot, -1.0), 1.0);
 
-	SetMotor(FRONT_LEFT, left);
-	SetMotor(REAR_LEFT, left);
+	SetMotor(FRONT_LEFT, -left);
+	SetMotor(REAR_LEFT, -left);
 	SetMotor(FRONT_RIGHT, right);
 	SetMotor(REAR_RIGHT, right);
 
@@ -64,7 +64,7 @@ void RobotIO::Start() {
 	tio.c_cc[VMIN] = 1;
 	tio.c_cc[VTIME] = 5;
 
-	if (cfsetispeed(&tio, B9600) < 0 || cfsetospeed(&tio, B9600) < 0) {
+	if (cfsetispeed(&tio, B9600) < 0 || cfsetospeed(&tio, B115200) < 0) {
 		Logger::Log(Logger::LEVEL_ERROR_CRITICAL, "Error setting PSoC baud");
 		return;
 	}

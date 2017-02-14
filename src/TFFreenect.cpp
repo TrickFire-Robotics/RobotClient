@@ -1,5 +1,8 @@
 #include "TFFreenect.h"
 
+#if OPENCV
+#if KINECT
+
 namespace trickfire {
 	TFFreenect::TFFreenect(freenect_context *_ctx, int _index) :
 			Freenect::FreenectDevice(_ctx, _index), m_buffer_depth(
@@ -60,3 +63,6 @@ namespace trickfire {
 		}
 	}
 }
+
+#endif
+#endif

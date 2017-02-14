@@ -1,6 +1,7 @@
 #include "KinectSendCommand.h"
 
 #if OPENCV
+#if KINECT
 
 namespace trickfire {
 KinectSendCommand::KinectSendCommand(Client * client, sf::Mutex * mut_client,
@@ -100,4 +101,5 @@ bool KinectSendCommand::IsFinished() {
 }
 }
 
+#endif
 #endif
