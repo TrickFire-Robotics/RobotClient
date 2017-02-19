@@ -22,6 +22,8 @@ public:
 	float GetRunningTime();
 
 	static inline void KillAll() { killAll = true; }
+
+	virtual std::string GetCommandName() = 0;
 protected:
 	virtual void OnStart() = 0;
 	virtual void Update() = 0;

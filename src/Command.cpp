@@ -18,19 +18,19 @@ Command::~Command() {
 
 void Command::Start() {
 	if (!running) {
-		Logger::Log(Logger::LEVEL_INFO_FINE, "Starting command");
+		Logger::Log(Logger::LEVEL_INFO_FINE, "Starting command " + GetCommandName());
 		_startTime = CURRENT_TIME;
 		_prevTime = CURRENT_TIME;
 		running = true;
 	} else {
-		Logger::Log(Logger::LEVEL_INFO_FINE, "Starting command (was already running)");
+		Logger::Log(Logger::LEVEL_INFO_FINE, "Starting command "  + GetCommandName() + " (was already running)");
 	}
 
 	OnStart();
 }
 
 void Command::Stop() {
-	Logger::Log(Logger::LEVEL_INFO_FINE, "Stopping command");
+	Logger::Log(Logger::LEVEL_INFO_FINE, "Stopping command " + GetCommandName());
 	if (running) {
 		running = false;
 		OnFinish();

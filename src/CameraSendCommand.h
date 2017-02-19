@@ -24,6 +24,9 @@ public:
 	void OnFinish() override;
 	void Update() override;
 	bool IsFinished() override;
+	inline std::string GetCommandName() override {
+		return "Camera Send Command";
+	}
 
 private:
 	Client * _client;

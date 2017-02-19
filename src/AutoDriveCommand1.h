@@ -13,6 +13,9 @@ public:
 	void Update() override;
 	bool IsFinished() override;
 	void OnFinish() override;
+	inline std::string GetCommandName() override {
+		return "Auto Drive Command 1";
+	}
 };
 }
 

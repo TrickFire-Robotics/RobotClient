@@ -30,6 +30,10 @@ public:
 		this->rot = rot;
 		mut_val.unlock();
 	}
+
+	inline std::string GetCommandName() override {
+		return "Standard Drive Command";
+	}
 private:
 	double forward, rot;
 	sf::Mutex mut_val;

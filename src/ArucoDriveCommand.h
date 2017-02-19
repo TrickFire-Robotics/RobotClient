@@ -17,6 +17,9 @@ public:
 	void OnFinish() override;
 	void Update() override;
 	bool IsFinished() override;
+	inline std::string GetCommandName() override {
+		return "ArUco Drive Command";
+	}
 
 	sf::Mutex mutex_aruco;
 	cv::Ptr<cv::aruco::Dictionary> dict = cv::aruco::getPredefinedDictionary(
