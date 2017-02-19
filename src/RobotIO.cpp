@@ -19,6 +19,24 @@ sf::Mutex RobotIO::mutex_motorValues;
 bool RobotIO::_running = false;
 int RobotIO::psocFD;
 
+// Courtesy of https://www.jeremymorgan.com/tutorials/c-programming/how-to-capture-the-output-of-a-linux-command-in-c/
+std::string GetStdoutFromCommand(std::string cmd) {
+	std::string data;
+	FILE * stream;
+	const int max_buffer = 256;
+	char buffer[max_buffer];
+	cmd.append(" 2>&1");
+
+	stream = popen(cmd.c_str(), "r");
+	if (stream) {
+		while (!feof(stream))
+			if (fgets(buffer, max_buffer, stream) != NULL)
+				data.append(buffer);
+		pclose(stream);
+	}
+	return data;
+}
+
 void RobotIO::SetMotor(unsigned char motorId, double value) {
 	Logger::Log(Logger::LEVEL_INFO_VERY_FINE, "Setting motor " + to_string(motorId) + " to output " + to_string(value));
 	sf::Lock motorValuesLock (mutex_motorValues);
@@ -39,14 +57,28 @@ void RobotIO::SimpleArcade(double forwards, double rot) {
 }
 
 void RobotIO::Start() {
-	psocFD = open(PSOC_PORT, O_RDWR);
+	std::string lsOut = GetStdoutFromCommand("ls /dev/ttyUSB*");
+	if (lsOut[0] == 'l' && lsOut[1] == 's' && lsOut[2] == ':') {
+		Logger::Log(Logger::LEVEL_WARNING, "No ports found at /dev/ttyUSB*, resorting to default.");
+		psocFD = open(PSOC_DEFAULT_PORT, O_RDWR);
+	} else {
+		char path[15];
+		for (int i = 0; i < 15; i++) {
+			if (lsOut[i] == 10)
+				break;
+
+			path[i] = lsOut[i];
+		}
+		Logger::Log(Logger::LEVEL_INFO_FINE, "Found device at " + std::string(path) + ", attempting to open");
+		psocFD = open(path, O_RDWR);
+	}
 	if (psocFD == -1) {
-		Logger::Log(Logger::LEVEL_ERROR_CRITICAL, "Failed to open PSoC port");
+		Logger::Log(Logger::LEVEL_ERROR_CRITICAL, "Failed to open arduino port");
 		return;
 	}
 
 	if (!isatty(psocFD)) {
-		Logger::Log(Logger::LEVEL_ERROR_CRITICAL, "PSoC port not TTY");
+		Logger::Log(Logger::LEVEL_ERROR_CRITICAL, "Arduino port not TTY");
 		return;
 	}
 
@@ -54,7 +86,7 @@ void RobotIO::Start() {
 
 	if (tcgetattr(psocFD, &tio) < 0) {
 		Logger::Log(Logger::LEVEL_ERROR_CRITICAL,
-				"Error getting PSoC attributes");
+				"Error getting arduino attributes");
 		return;
 	}
 
@@ -66,13 +98,13 @@ void RobotIO::Start() {
 	tio.c_cc[VTIME] = 5;
 
 	if (cfsetispeed(&tio, B9600) < 0 || cfsetospeed(&tio, B115200) < 0) {
-		Logger::Log(Logger::LEVEL_ERROR_CRITICAL, "Error setting PSoC baud");
+		Logger::Log(Logger::LEVEL_ERROR_CRITICAL, "Error setting arduino baud");
 		return;
 	}
 
 	if (tcsetattr(psocFD, TCSAFLUSH, &tio) < 0) {
 		Logger::Log(Logger::LEVEL_ERROR_CRITICAL,
-				"Error setting PSoC attributes");
+				"Error setting arduino attributes");
 		return;
 	}
 

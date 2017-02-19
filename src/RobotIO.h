@@ -10,7 +10,7 @@
 #include <unistd.h>
 #include <termios.h>
 
-#define PSOC_PORT "/dev/ttyUSB0"
+#define PSOC_DEFAULT_PORT "/dev/ttyUSB0"
 
 using namespace std;
 
