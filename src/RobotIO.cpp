@@ -20,6 +20,7 @@ bool RobotIO::_running = false;
 int RobotIO::psocFD;
 
 void RobotIO::SetMotor(unsigned char motorId, double value) {
+	Logger::Log(Logger::LEVEL_INFO_VERY_FINE, "Setting motor " + to_string(motorId) + " to output " + to_string(value));
 	sf::Lock motorValuesLock (mutex_motorValues);
 	motorValues[motorId] = value;
 }
@@ -80,9 +81,8 @@ void RobotIO::Start() {
 }
 
 void RobotIO::Stop() {
-	// TODO: Stop the thread!
 	close(psocFD);
-	_running = false;
+	_running = false; // TODO: Mutex?
 }
 
 void RobotIO::ThreadLoop() {

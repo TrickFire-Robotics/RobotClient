@@ -14,15 +14,6 @@ StandardDriveCommand standardDrive;
 AutoDriveCommand1 autoDrive1;
 ArucoDriveCommand arucoDrive;
 
-#if OPENCV
-//cv::Mat frameRGB;
-/*cv::Mat frameRGBA;
- sf::Image image;
- sf::Texture texture;
- sf::Sprite sprite;
- sf::Mutex mutex_cameraVars;*/
-#endif
-
 void Main::Start() {
 	Logger::SetLoggingLevel(Logger::LEVEL_INFO_FINE);
 	RobotIO::Start();
@@ -88,24 +79,25 @@ void Main::ResumeStandardDrive() {
 void Main::OnClientMessageReceived(Packet& packet) {
 	int type = -1;
 	packet >> type;
-	std::cout << "Receiving packet!" << std::endl;
 	switch (type) {
 	case DRIVE_PACKET:
+		Logger::Log(Logger::LEVEL_INFO_VERY_FINE, "Received drive packet");
 		double forwards;
 		double rotation;
 		packet >> forwards >> rotation;
 		standardDrive.SetVals(forwards, rotation);
 		break;
 	case AUTO_PACKET_1:
+		Logger::Log(Logger::LEVEL_INFO_VERY_FINE, "Received auto 1 packet");
 		if (drivebase != &arucoDrive) {
 			drivebase->Stop();
-			cout << "Starting auto command" << endl;
+			Logger::Log(Logger::LEVEL_INFO_FINE, "Starting ArUco drive command");
 			drivebase = &arucoDrive;
 			drivebase->Start();
 		}
 		break;
 	default:
-
+		Logger::Log(Logger::LEVEL_INFO_FINE, "Received unknown packet (type " + to_string(type) + ")");
 		break;
 	}
 }
@@ -113,7 +105,7 @@ void Main::OnClientMessageReceived(Packet& packet) {
 void Main::SfmlWindowThread() {
 	Font wlmCarton;
 	if (!wlmCarton.loadFromFile("wlm_carton.ttf")) {
-		cerr << "Error loading font" << endl;
+		Logger::Log(Logger::LEVEL_ERROR, "Error loading font: will continue but text will be invisible");
 	}
 
 	RenderWindow window(VideoMode(500, 768), "TrickFire Robotics - Client");

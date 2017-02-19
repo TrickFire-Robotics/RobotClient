@@ -18,16 +18,19 @@ Command::~Command() {
 
 void Command::Start() {
 	if (!running) {
+		Logger::Log(Logger::LEVEL_INFO_FINE, "Starting command");
 		_startTime = CURRENT_TIME;
 		_prevTime = CURRENT_TIME;
 		running = true;
+	} else {
+		Logger::Log(Logger::LEVEL_INFO_FINE, "Starting command (was already running)");
 	}
 
 	OnStart();
 }
 
 void Command::Stop() {
-	std::cout << "Stopping" << std::endl;
+	Logger::Log(Logger::LEVEL_INFO_FINE, "Stopping command");
 	if (running) {
 		running = false;
 		OnFinish();
@@ -53,7 +56,6 @@ void Command::ThreadMethod(Command * command) {
 			command->Update();
 		}
 		if (needsToStop && command->running) { // To prevent a doublestop (heyyy, drumming joke)
-			std::cout << "Auto-stopping" << std::endl;
 			command->Stop();
 			needsToStop = false;
 		}

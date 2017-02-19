@@ -7,6 +7,8 @@
 #include <chrono>
 #include <unistd.h>
 
+#include "Logger.h"
+
 namespace trickfire {
 
 class Command {

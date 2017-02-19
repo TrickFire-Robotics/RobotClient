@@ -9,7 +9,6 @@ void ArucoDriveCommand::OnStart() {
 }
 
 void ArucoDriveCommand::Update() {
-	std::cout << "Aruco!" << std::endl;
 	mutex_aruco.lock();
 	if (centerX >= 0) {
 		if (centerX - 340 > SIDE) {
