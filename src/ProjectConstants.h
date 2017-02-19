@@ -24,7 +24,7 @@ namespace trickfire {
 #endif
 
 #ifndef CAMERA_SEND_FPS
-#define CAMERA_SEND_FPS 12
+#define CAMERA_SEND_FPS 24
 #endif
 
 #ifndef KINECT_SEND_FPS

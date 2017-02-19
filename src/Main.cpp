@@ -12,6 +12,7 @@ namespace trickfire {
 Command * drivebase;
 StandardDriveCommand standardDrive;
 AutoDriveCommand1 autoDrive1;
+ArucoDriveCommand arucoDrive;
 
 #if OPENCV
 //cv::Mat frameRGB;
@@ -35,7 +36,7 @@ void Main::Start() {
 
 #if OPENCV
 #if CAMERA
-	CameraSendCommand cameraCommand(&client, &mut_client);
+	CameraSendCommand cameraCommand(&client, &mut_client, &arucoDrive);
 	cameraCommand.Start();
 #endif
 #if KINECT
@@ -96,10 +97,10 @@ void Main::OnClientMessageReceived(Packet& packet) {
 		standardDrive.SetVals(forwards, rotation);
 		break;
 	case AUTO_PACKET_1:
-		if (drivebase != &autoDrive1) {
+		if (drivebase != &arucoDrive) {
 			drivebase->Stop();
 			cout << "Starting auto command" << endl;
-			drivebase = &autoDrive1;
+			drivebase = &arucoDrive;
 			drivebase->Start();
 		}
 		break;
