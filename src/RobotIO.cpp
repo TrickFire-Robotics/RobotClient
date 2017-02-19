@@ -82,13 +82,12 @@ void RobotIO::Start() {
 
 void RobotIO::Stop() {
 	close(psocFD);
-	_running = false; // TODO: Mutex?
+	_running = false;
 }
 
 void RobotIO::ThreadLoop() {
 	while (_running) {
-		// TODO: Make periodic (add a delay)
-		// TODO: Reserved char values for something special (disabled or something?)
+		// TODO: Possibly change system to something more than one unsigned char
 		for (map<unsigned char, double>::iterator iterator =
 				motorValues.begin(); iterator != motorValues.end();
 				iterator++) {
