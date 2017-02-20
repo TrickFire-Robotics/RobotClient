@@ -4,12 +4,7 @@
 
 namespace trickfire {
 CameraSendCommand::CameraSendCommand(Client * client, sf::Mutex * mut_client) :
-		_client(client), mut_client(mut_client), cap(-1), _last_time(0.0), arucoDrive(nullptr) {
-
-}
-
-CameraSendCommand::CameraSendCommand(Client * client, sf::Mutex * mut_client, ArucoDriveCommand * arucoDrive) :
-		_client(client), mut_client(mut_client), cap(-1), _last_time(0.0), arucoDrive(arucoDrive) {
+		_client(client), mut_client(mut_client), cap(-1), _last_time(0.0) {
 
 }
 
@@ -22,9 +17,11 @@ void CameraSendCommand::OnFinish() {
 }
 
 void CameraSendCommand::Update() {
+	mut_image.lock();
 	cap >> frameRGB;
+	mut_image.unlock();
 
-	if (arucoDrive != nullptr) {
+	/*if (arucoDrive != nullptr) {
 		arucoDrive->mutex_aruco.lock();
 		arucoDrive->centerX = -1;
 		arucoDrive->centerY = -1;
@@ -51,7 +48,7 @@ void CameraSendCommand::Update() {
 			}
 		}
 		arucoDrive->mutex_aruco.unlock();
-	}
+	}*/
 
 	if (GetRunningTime() - _last_time > 1.0 / CAMERA_SEND_FPS) {
 		double scale = 0.35;

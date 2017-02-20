@@ -12,7 +12,9 @@ namespace trickfire {
 Command * drivebase;
 StandardDriveCommand standardDrive;
 AutoDriveCommand1 autoDrive1;
+#if OPENCV and CAMERA
 ArucoDriveCommand arucoDrive;
+#endif
 
 void Main::Start() {
 	Logger::SetLoggingLevel(Logger::LEVEL_INFO_FINE);
@@ -27,8 +29,9 @@ void Main::Start() {
 
 #if OPENCV
 #if CAMERA
-	CameraSendCommand cameraCommand(&client, &mut_client, &arucoDrive);
+	CameraSendCommand cameraCommand(&client, &mut_client);
 	cameraCommand.Start();
+	arucoDrive.SetCamera(&cameraCommand);
 #endif
 #if KINECT
 	Freenect::Freenect freenect;
@@ -89,12 +92,14 @@ void Main::OnClientMessageReceived(Packet& packet) {
 		break;
 	case AUTO_PACKET_1:
 		Logger::Log(Logger::LEVEL_INFO_VERY_FINE, "Received auto 1 packet");
+#if OPENCV and CAMERA
 		if (drivebase != &arucoDrive) {
 			drivebase->Stop();
 			Logger::Log(Logger::LEVEL_INFO_FINE, "Starting ArUco drive command");
 			drivebase = &arucoDrive;
 			drivebase->Start();
 		}
+#endif
 		break;
 	default:
 		Logger::Log(Logger::LEVEL_INFO_FINE, "Received unknown packet (type " + to_string(type) + ")");

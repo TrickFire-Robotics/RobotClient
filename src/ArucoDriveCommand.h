@@ -3,6 +3,10 @@
 
 #include "ProjectConstants.h"
 
+#if OPENCV and CAMERA
+
+#include "CameraSendCommand.h"
+
 #include "Command.h"
 #include "RobotIO.h"
 #include "Main.h"
@@ -13,6 +17,8 @@ namespace trickfire {
 
 class ArucoDriveCommand: public Command {
 public:
+	ArucoDriveCommand();
+
 	void OnStart() override;
 	void OnFinish() override;
 	void Update() override;
@@ -20,8 +26,11 @@ public:
 	inline std::string GetCommandName() override {
 		return "ArUco Drive Command";
 	}
+	inline void SetCamera(CameraSendCommand * camera) {
+		this->camera = camera;
+	}
 
-	sf::Mutex mutex_aruco;
+	CameraSendCommand * camera;
 	cv::Ptr<cv::aruco::Dictionary> dict = cv::aruco::getPredefinedDictionary(
 			cv::aruco::DICT_4X4_50);
 	std::vector<int> markerIds;
@@ -30,4 +39,5 @@ public:
 };
 }
 
+#endif
 #endif

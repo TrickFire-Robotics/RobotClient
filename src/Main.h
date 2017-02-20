@@ -14,6 +14,7 @@
 #include "AutoDriveCommand1.h"
 #include "CameraSendCommand.h"
 #include "KinectSendCommand.h"
+#include "ArucoDriveCommand.h"
 
 #include <iostream>
 #include <SFML/Window.hpp>

@@ -33,7 +33,6 @@ void Command::Stop() {
 	Logger::Log(Logger::LEVEL_INFO_FINE, "Stopping command " + GetCommandName());
 	if (running) {
 		running = false;
-		OnFinish();
 	}
 	_startTime = 0.0f;
 	_prevTime = 0.0f;
