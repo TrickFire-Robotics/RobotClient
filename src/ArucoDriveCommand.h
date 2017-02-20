@@ -36,6 +36,8 @@ public:
 	std::vector<int> markerIds;
 	std::vector<std::vector<cv::Point2f> > markerCorners;
 	float centerX, centerY;
+private:
+	void UpdateArucoData(cv::Mat& img);
 };
 }
 
