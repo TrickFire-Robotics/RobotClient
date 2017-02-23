@@ -11,6 +11,7 @@
 #include <termios.h>
 
 #define PSOC_DEFAULT_PORT "/dev/ttyUSB0"
+#define PI 3.14159265358979323846
 
 using namespace std;
 
@@ -30,6 +31,18 @@ public:
 
 	static void SendPSoCBytes(const unsigned char val[]);
 
+	static inline double GetGyroYaw() {
+		return gyroYaw;
+	}
+
+	static inline double GetGyroPitch() {
+		return gyroPitch;
+	}
+
+	static inline double GetGyroRoll() {
+		return gyroRoll;
+	}
+
 private:
 	static map<unsigned char, double> motorValues;
 	static sf::Mutex mutex_motorValues;
@@ -38,9 +51,17 @@ private:
 
 	static sf::Thread commThread;
 
-	static int psocFD;
+	static int ardFD;
+
+	static unsigned char buffer[];
+	static int bufferSize;
+	static int sensorMode;
+
+	static double gyroYaw, gyroPitch, gyroRoll;
 
 	static void ThreadLoop();
+
+	static void ProcessSensorPacket(unsigned char c);
 
 	// PWM = 0 to 254, this converts from 128 being zero, 0 being full reverse, and 254 being full forwards
 	static inline double PWMToDouble(unsigned char pwm) {

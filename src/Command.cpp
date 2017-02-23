@@ -56,6 +56,7 @@ void Command::ThreadMethod(Command * command) {
 		}
 		if (needsToStop && command->running) { // To prevent a doublestop (heyyy, drumming joke)
 			command->Stop();
+			command->OnFinish();
 			needsToStop = false;
 		}
 	}

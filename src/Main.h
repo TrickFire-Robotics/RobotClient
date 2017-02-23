@@ -15,6 +15,7 @@
 #include "CameraSendCommand.h"
 #include "KinectSendCommand.h"
 #include "ArucoDriveCommand.h"
+#include "GyroResetCommand.h"
 
 #include <iostream>
 #include <SFML/Window.hpp>

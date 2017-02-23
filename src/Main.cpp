@@ -7,6 +7,8 @@
 #define ROW2 64
 #define ROW3 ROW2 + 264 + 16
 
+# define PI 3.14159265358979323846
+
 namespace trickfire {
 
 Command * drivebase;
@@ -15,6 +17,9 @@ AutoDriveCommand1 autoDrive1;
 #if OPENCV and CAMERA
 ArucoDriveCommand arucoDrive;
 #endif
+GyroResetCommand gyroDrive;
+
+double zero = 0;
 
 void Main::Start() {
 	Logger::SetLoggingLevel(Logger::LEVEL_INFO_FINE);
@@ -92,17 +97,46 @@ void Main::OnClientMessageReceived(Packet& packet) {
 		break;
 	case AUTO_PACKET_1:
 		Logger::Log(Logger::LEVEL_INFO_VERY_FINE, "Received auto 1 packet");
-#if OPENCV and CAMERA
-		if (drivebase != &arucoDrive) {
+		if (drivebase != &gyroDrive) {
 			drivebase->Stop();
-			Logger::Log(Logger::LEVEL_INFO_FINE, "Starting ArUco drive command");
-			drivebase = &arucoDrive;
+			Logger::Log(Logger::LEVEL_INFO_FINE,
+					"Starting gyro rotate drive command (0)");
+			gyroDrive.SetTarget(0);
+			drivebase = &gyroDrive;
 			drivebase->Start();
 		}
-#endif
 		break;
+	case AUTO_PACKET_1 + 1:
+		Logger::Log(Logger::LEVEL_INFO_FINE,
+				"Zeroing gyro to " + std::to_string(RobotIO::GetGyroYaw()));
+		gyroDrive.SetZero(RobotIO::GetGyroYaw());
+		break;
+	case AUTO_PACKET_1 + 2:
+		Logger::Log(Logger::LEVEL_INFO_VERY_FINE, "Auto rotating left 90");
+		if (drivebase != &gyroDrive) {
+			drivebase->Stop();
+			Logger::Log(Logger::LEVEL_INFO_FINE,
+					"Starting gyro rotate drive command (-90)");
+			gyroDrive.SetTarget(fmod(RobotIO::GetGyroYaw() - gyroDrive.GetZero() - 90+ 720.0, 360.0));
+			drivebase = &gyroDrive;
+			drivebase->Start();
+		}
+		break;
+	case AUTO_PACKET_1 + 3:
+		Logger::Log(Logger::LEVEL_INFO_VERY_FINE, "Auto rotating right 90");
+		if (drivebase != &gyroDrive) {
+			drivebase->Stop();
+			Logger::Log(Logger::LEVEL_INFO_FINE,
+					"Starting gyro rotate drive command (90)");
+			drivebase = &gyroDrive;
+			gyroDrive.SetTarget(fmod(RobotIO::GetGyroYaw() - gyroDrive.GetZero() + 90 + 720.0, 360.0));
+			drivebase->Start();
+		}
+		break;
+
 	default:
-		Logger::Log(Logger::LEVEL_INFO_FINE, "Received unknown packet (type " + to_string(type) + ")");
+		Logger::Log(Logger::LEVEL_INFO_FINE,
+				"Received unknown packet (type " + to_string(type) + ")");
 		break;
 	}
 }
@@ -110,7 +144,8 @@ void Main::OnClientMessageReceived(Packet& packet) {
 void Main::SfmlWindowThread() {
 	Font wlmCarton;
 	if (!wlmCarton.loadFromFile("wlm_carton.ttf")) {
-		Logger::Log(Logger::LEVEL_ERROR, "Error loading font: will continue but text will be invisible");
+		Logger::Log(Logger::LEVEL_ERROR,
+				"Error loading font: will continue but text will be invisible");
 	}
 
 	RenderWindow window(VideoMode(500, 768), "TrickFire Robotics - Client");
@@ -143,6 +178,18 @@ void Main::SfmlWindowThread() {
 				Vector2f(COL2 + (rotLabelSize.x / 2) - 20, ROW2),
 				Vector2f(40, 264), Vector2f(4, 4), background, Color::Green,
 				window);
+
+		sf::VertexArray line = sf::VertexArray(sf::Lines, 2);
+		line[0].position = Vector2f(250, (768 * 0.75));
+
+		double radYaw = (RobotIO::GetGyroYaw() - gyroDrive.GetZero()) * PI
+				/ 180;
+		line[1].position = Vector2f(line[0].position.x + (100 * cos(radYaw)),
+				line[0].position.y + (100 * sin(radYaw)));
+		line[0].color = Color::Green;
+		line[1].color = Color::Green;
+
+		window.draw(line);
 
 		window.display();
 	}
