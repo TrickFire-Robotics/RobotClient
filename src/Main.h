@@ -11,10 +11,8 @@
 #include "DisplayVariables.h"
 
 #include "StandardDriveCommand.h"
-#include "AutoDriveCommand1.h"
 #include "CameraSendCommand.h"
 #include "KinectSendCommand.h"
-#include "ArucoDriveCommand.h"
 #include "GyroResetCommand.h"
 
 #include <iostream>

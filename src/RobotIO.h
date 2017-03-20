@@ -13,6 +13,17 @@
 #define PSOC_DEFAULT_PORT "/dev/ttyUSB0"
 #define PI 3.14159265358979323846
 
+#define PSOC_SEND_DELAY 500
+
+#define DRIVE_FRONT_LEFT 'a'
+#define DRIVE_FRONT_RIGHT 'b'
+#define DRIVE_REAR_LEFT 'c'
+#define DRIVE_REAR_RIGHT 'd'
+#define MINER_SPIN 'e'
+#define MINER_RAISE_LOWER 'f'
+#define BIN_SLIDE 'g'
+#define CONVEYOR 'h'
+
 using namespace std;
 
 namespace trickfire {

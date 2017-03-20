@@ -1,3 +1,4 @@
+
 #include "Main.h"
 
 #define COL1 128
@@ -13,10 +14,6 @@ namespace trickfire {
 
 Command * drivebase;
 StandardDriveCommand standardDrive;
-AutoDriveCommand1 autoDrive1;
-#if OPENCV and CAMERA
-ArucoDriveCommand arucoDrive;
-#endif
 GyroResetCommand gyroDrive;
 
 double zero = 0;
@@ -36,7 +33,6 @@ void Main::Start() {
 #if CAMERA
 	CameraSendCommand cameraCommand(&client, &mut_client);
 	cameraCommand.Start();
-	arucoDrive.SetCamera(&cameraCommand);
 #endif
 #if KINECT
 	Freenect::Freenect freenect;
@@ -95,45 +91,6 @@ void Main::OnClientMessageReceived(Packet& packet) {
 		packet >> forwards >> rotation;
 		standardDrive.SetVals(forwards, rotation);
 		break;
-	case AUTO_PACKET_1:
-		Logger::Log(Logger::LEVEL_INFO_VERY_FINE, "Received auto 1 packet");
-		if (drivebase != &gyroDrive) {
-			drivebase->Stop();
-			Logger::Log(Logger::LEVEL_INFO_FINE,
-					"Starting gyro rotate drive command (0)");
-			gyroDrive.SetTarget(0);
-			drivebase = &gyroDrive;
-			drivebase->Start();
-		}
-		break;
-	case AUTO_PACKET_1 + 1:
-		Logger::Log(Logger::LEVEL_INFO_FINE,
-				"Zeroing gyro to " + std::to_string(RobotIO::GetGyroYaw()));
-		gyroDrive.SetZero(RobotIO::GetGyroYaw());
-		break;
-	case AUTO_PACKET_1 + 2:
-		Logger::Log(Logger::LEVEL_INFO_VERY_FINE, "Auto rotating left 90");
-		if (drivebase != &gyroDrive) {
-			drivebase->Stop();
-			Logger::Log(Logger::LEVEL_INFO_FINE,
-					"Starting gyro rotate drive command (-90)");
-			gyroDrive.SetTarget(fmod(RobotIO::GetGyroYaw() - gyroDrive.GetZero() - 90+ 720.0, 360.0));
-			drivebase = &gyroDrive;
-			drivebase->Start();
-		}
-		break;
-	case AUTO_PACKET_1 + 3:
-		Logger::Log(Logger::LEVEL_INFO_VERY_FINE, "Auto rotating right 90");
-		if (drivebase != &gyroDrive) {
-			drivebase->Stop();
-			Logger::Log(Logger::LEVEL_INFO_FINE,
-					"Starting gyro rotate drive command (90)");
-			drivebase = &gyroDrive;
-			gyroDrive.SetTarget(fmod(RobotIO::GetGyroYaw() - gyroDrive.GetZero() + 90 + 720.0, 360.0));
-			drivebase->Start();
-		}
-		break;
-
 	default:
 		Logger::Log(Logger::LEVEL_INFO_FINE,
 				"Received unknown packet (type " + to_string(type) + ")");

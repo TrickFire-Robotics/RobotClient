@@ -5,13 +5,6 @@
 #include <chrono>
 #include <thread>
 
-#define PSOC_SEND_DELAY 500
-
-#define FRONT_LEFT 'a'
-#define FRONT_RIGHT 'b'
-#define REAR_LEFT 'c'
-#define REAR_RIGHT 'd'
-
 namespace trickfire {
 sf::Thread RobotIO::commThread(&RobotIO::ThreadLoop);
 map<unsigned char, double> RobotIO::motorValues;
@@ -53,10 +46,10 @@ void RobotIO::SimpleArcade(double forwards, double rot) {
 	double left = min(max(forwards + rot, -1.0), 1.0);
 	double right = min(max(forwards - rot, -1.0), 1.0);
 
-	SetMotor(FRONT_LEFT, -left);
-	SetMotor(REAR_LEFT, -left);
-	SetMotor(FRONT_RIGHT, right);
-	SetMotor(REAR_RIGHT, right);
+	SetMotor(DRIVE_FRONT_LEFT, -left);
+	SetMotor(DRIVE_REAR_LEFT, -left);
+	SetMotor(DRIVE_FRONT_RIGHT, right);
+	SetMotor(DRIVE_REAR_RIGHT, right);
 
 	DisplayVariables::SetDrive(forwards);
 	DisplayVariables::SetRot(rot);
@@ -64,6 +57,7 @@ void RobotIO::SimpleArcade(double forwards, double rot) {
 
 void RobotIO::Start() {
 	std::string lsOut = GetStdoutFromCommand("ls /dev/ttyUSB*");
+	// TODO: Fix this searching operation!
 	if (true || lsOut[0] == 'l' && lsOut[1] == 's' && lsOut[2] == ':') {
 		Logger::Log(Logger::LEVEL_WARNING,
 				"No ports found at /dev/ttyUSB*, resorting to default.");
