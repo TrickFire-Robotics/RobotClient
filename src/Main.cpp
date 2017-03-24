@@ -1,8 +1,8 @@
-
 #include "Main.h"
 
 #define COL1 128
 #define COL2 300
+#define COL3 500
 
 #define ROW1 8
 #define ROW2 64
@@ -14,7 +14,6 @@ namespace trickfire {
 
 Command * drivebase;
 StandardDriveCommand standardDrive;
-GyroResetCommand gyroDrive;
 
 double zero = 0;
 
@@ -91,6 +90,39 @@ void Main::OnClientMessageReceived(Packet& packet) {
 		packet >> forwards >> rotation;
 		standardDrive.SetVals(forwards, rotation);
 		break;
+	case MINER_MOVE_PACKET:
+		int move_dir;
+		packet >> move_dir;
+		switch (move_dir) {
+		case 0:
+			Logger::Log(Logger::LEVEL_INFO_FINE,
+					"Received miner move packet (stop)");
+			break;
+		case 1:
+			Logger::Log(Logger::LEVEL_INFO_FINE,
+					"Received miner move packet (raise)");
+			break;
+		case -1:
+			Logger::Log(Logger::LEVEL_INFO_FINE,
+					"Received miner move packet (lower)");
+			break;
+		}
+		break;
+	case MINER_SPIN_PACKET:
+		int spin_dir;
+		packet >> spin_dir;
+		switch (spin_dir) {
+		case 0:
+			Logger::Log(Logger::LEVEL_INFO_FINE, "Received miner spin packet (stop)");
+			break;
+		case 1:
+			Logger::Log(Logger::LEVEL_INFO_FINE, "Received miner spin packet (dig)");
+			break;
+		case -1:
+			Logger::Log(Logger::LEVEL_INFO_FINE, "Received miner spin packet (empty)");
+			break;
+		}
+		break;
 	default:
 		Logger::Log(Logger::LEVEL_INFO_FINE,
 				"Received unknown packet (type " + to_string(type) + ")");
@@ -105,7 +137,7 @@ void Main::SfmlWindowThread() {
 				"Error loading font: will continue but text will be invisible");
 	}
 
-	RenderWindow window(VideoMode(500, 768), "TrickFire Robotics - Client");
+	RenderWindow window(VideoMode(1366, 768), "TrickFire Robotics - Client");
 
 	while (window.isOpen()) {
 		window.clear(Color::Black);
@@ -136,11 +168,19 @@ void Main::SfmlWindowThread() {
 				Vector2f(40, 264), Vector2f(4, 4), background, Color::Green,
 				window);
 
+		Vector2f driveOutLabelSize = DrawingUtil::DrawGenericHeader(
+				"Drive System: ", Vector2f(COL3, ROW1), false, wlmCarton,
+				Color::Green, window);
+		Vector2f driveLabelSize = DrawingUtil::DrawGenericText(
+				drivebase->GetCommandName(),
+				Vector2f(COL3 + driveOutLabelSize.x, ROW1 + 48 - 36), false,
+				wlmCarton, Color::White, window);
+
 		sf::VertexArray line = sf::VertexArray(sf::Lines, 2);
 		line[0].position = Vector2f(250, (768 * 0.75));
 
-		double radYaw = (RobotIO::GetGyroYaw() - gyroDrive.GetZero()) * PI
-				/ 180;
+		// double radYaw = (RobotIO::GetGyroYaw() - gyroDrive.GetZero()) * PI / 180;
+		double radYaw = (RobotIO::GetGyroYaw() * PI / 180);
 		line[1].position = Vector2f(line[0].position.x + (100 * cos(radYaw)),
 				line[0].position.y + (100 * sin(radYaw)));
 		line[0].color = Color::Green;
