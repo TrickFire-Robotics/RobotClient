@@ -13,7 +13,7 @@ public:
 	void Update() override;
 	bool IsFinished() override;
 	inline std::string GetCommandName() override {
-		return "Bin -> Fill Position Command";
+		return "Bin 2 Fill Position Command";
 	}
 };
 }

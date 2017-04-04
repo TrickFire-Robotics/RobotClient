@@ -14,6 +14,6 @@ namespace trickfire {
 	}
 
 	bool CoalMinerDigCommand::IsFinished() {
-		return true; // TODO: Implement
+		return false;
 	}
 }

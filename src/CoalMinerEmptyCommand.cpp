@@ -14,6 +14,6 @@ namespace trickfire {
 	}
 
 	bool CoalMinerEmptyCommand::IsFinished() {
-		return true; // TODO: Implement
+		return false;
 	}
 }

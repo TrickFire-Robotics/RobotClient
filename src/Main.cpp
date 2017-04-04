@@ -15,6 +15,21 @@ namespace trickfire {
 Command * drivebase;
 StandardDriveCommand standardDrive;
 
+Command * coalMiner;
+CoalMinerDigCommand cmDig;
+CoalMinerEmptyCommand cmEmpty;
+
+Command * coalMinerMove;
+CoalMinerRaiseCommand cmRaise;
+CoalMinerLowerCommand cmLower;
+
+Command * binMove;
+BinToDumpCommand binToDump;
+BinToFillCommand binToFill;
+
+Command * conveyor;
+Conveyor
+
 double zero = 0;
 
 void Main::Start() {
@@ -97,14 +112,28 @@ void Main::OnClientMessageReceived(Packet& packet) {
 		case 0:
 			Logger::Log(Logger::LEVEL_INFO_FINE,
 					"Received miner move packet (stop)");
+			if (coalMinerMove != nullptr) {
+				coalMinerMove->Stop();
+			}
+			coalMinerMove = nullptr;
 			break;
 		case 1:
 			Logger::Log(Logger::LEVEL_INFO_FINE,
 					"Received miner move packet (raise)");
+			if (coalMinerMove != nullptr) {
+				coalMinerMove->Stop();
+			}
+			coalMinerMove = &cmRaise;
+			coalMinerMove->Start();
 			break;
 		case -1:
 			Logger::Log(Logger::LEVEL_INFO_FINE,
 					"Received miner move packet (lower)");
+			if (coalMinerMove != nullptr) {
+				coalMinerMove->Stop();
+			}
+			coalMinerMove = &cmLower;
+			coalMinerMove->Start();
 			break;
 		}
 		break;
@@ -113,14 +142,59 @@ void Main::OnClientMessageReceived(Packet& packet) {
 		packet >> spin_dir;
 		switch (spin_dir) {
 		case 0:
-			Logger::Log(Logger::LEVEL_INFO_FINE, "Received miner spin packet (stop)");
+			Logger::Log(Logger::LEVEL_INFO_FINE,
+					"Received miner spin packet (stop)");
+			if (coalMiner != nullptr) {
+				coalMiner->Stop();
+			}
+			coalMiner = nullptr;
 			break;
 		case 1:
-			Logger::Log(Logger::LEVEL_INFO_FINE, "Received miner spin packet (dig)");
+			Logger::Log(Logger::LEVEL_INFO_FINE,
+					"Received miner spin packet (dig)");
+			if (coalMiner != nullptr) {
+				coalMiner->Stop();
+			}
+			coalMiner = &cmDig;
+			coalMiner->Start();
 			break;
 		case -1:
-			Logger::Log(Logger::LEVEL_INFO_FINE, "Received miner spin packet (empty)");
+			Logger::Log(Logger::LEVEL_INFO_FINE,
+					"Received miner spin packet (empty)");
+			if (coalMiner != nullptr) {
+				coalMiner->Stop();
+			}
+			coalMiner = &cmEmpty;
+			coalMiner->Start();
 			break;
+		}
+		break;
+	case BIN_SLIDE_PACKET:
+		int slide_dir;
+		packet >> slide_dir;
+		switch (slide_dir) {
+		case 0:
+			//Logger::Log(Logger::LEVEL_INFO_FINE, "Received bin slide packet (stop)");
+			if (binMove != nullptr) {
+				binMove->Stop();
+			}
+			binMove = nullptr;
+			break;
+		case -1:
+			//Logger::Log(Logger::LEVEL_INFO_FINE, "Received bin slide packet (slide to fill)");
+			if (binMove != nullptr) {
+				binMove->Stop();
+			}
+			binMove = &binToFill;
+			binMove->Start();
+			break;
+		case 1:
+			//Logger::Log(Logger::LEVEL_INFO_FINE, "Received bin slide packet (slide to dump)");
+			if (binMove != nullptr) {
+				binMove->Stop();
+			}
+			binMove = &binToDump;
+			binMove->Start();
 		}
 		break;
 	default:
@@ -168,12 +242,53 @@ void Main::SfmlWindowThread() {
 				Vector2f(40, 264), Vector2f(4, 4), background, Color::Green,
 				window);
 
+		float subsystemY = ROW1;
+
 		Vector2f driveOutLabelSize = DrawingUtil::DrawGenericHeader(
-				"Drive System: ", Vector2f(COL3, ROW1), false, wlmCarton,
+				"Drive System: ", Vector2f(COL3, subsystemY), false, wlmCarton,
 				Color::Green, window);
 		Vector2f driveLabelSize = DrawingUtil::DrawGenericText(
 				drivebase->GetCommandName(),
-				Vector2f(COL3 + driveOutLabelSize.x, ROW1 + 48 - 36), false,
+				Vector2f(COL3 + driveOutLabelSize.x, subsystemY + 48 - 36),
+				false, wlmCarton, Color::White, window);
+
+		subsystemY += 56;
+
+		Vector2f cmOutLabelSize = DrawingUtil::DrawGenericHeader("CM Spin: ",
+				Vector2f(COL3, subsystemY), false, wlmCarton, Color::Green,
+				window);
+		std::string cmText = "";
+		if (coalMiner != nullptr) {
+			cmText = coalMiner->GetCommandName();
+		}
+		Vector2f cmLabelSize = DrawingUtil::DrawGenericText(cmText,
+				Vector2f(COL3 + cmOutLabelSize.x, subsystemY + 48 - 36), false,
+				wlmCarton, Color::White, window);
+
+		subsystemY += 56;
+
+		Vector2f cmMoveOutLabelSize = DrawingUtil::DrawGenericHeader(
+				"CM Move: ", Vector2f(COL3, subsystemY), false, wlmCarton,
+				Color::Green, window);
+		std::string cmMoveText = "";
+		if (coalMinerMove != nullptr) {
+			cmMoveText = coalMinerMove->GetCommandName();
+		}
+		Vector2f cmMoveLabelSize = DrawingUtil::DrawGenericText(cmMoveText,
+				Vector2f(COL3 + cmMoveOutLabelSize.x, subsystemY + 48 - 36),
+				false, wlmCarton, Color::White, window);
+
+		subsystemY += 56;
+
+		Vector2f binOutLabelSize = DrawingUtil::DrawGenericHeader("Bin Move: ",
+				Vector2f(COL3, subsystemY), false, wlmCarton, Color::Green,
+				window);
+		std::string binMoveText = "";
+		if (binMove != nullptr) {
+			binMoveText = binMove->GetCommandName();
+		}
+		Vector2f binLabelSize = DrawingUtil::DrawGenericText(binMoveText,
+				Vector2f(COL3 + binOutLabelSize.x, subsystemY + 48 - 36), false,
 				wlmCarton, Color::White, window);
 
 		sf::VertexArray line = sf::VertexArray(sf::Lines, 2);

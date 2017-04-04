@@ -14,6 +14,13 @@
 #include "CameraSendCommand.h"
 #include "KinectSendCommand.h"
 #include "GyroResetCommand.h"
+#include "CoalMinerDigCommand.h"
+#include "CoalMinerEmptyCommand.h"
+#include "CoalMinerRaiseCommand.h"
+#include "CoalMinerLowerCommand.h"
+#include "BinToFillCommand.h"
+#include "BinToDumpCommand.h"
+#include "ConveyorDumpCommand.h"
 
 #include <iostream>
 #include <SFML/Window.hpp>
