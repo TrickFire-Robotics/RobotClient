@@ -56,16 +56,16 @@ void RobotIO::SimpleArcade(double forwards, double rot) {
 }
 
 void RobotIO::Start() {
-	std::string lsOut = GetStdoutFromCommand("ls /dev/ttyUSB*");
-	// TODO: Fix this searching operation!
-	if (true || lsOut[0] == 'l' && lsOut[1] == 's' && lsOut[2] == ':') {
+	std::string lsOut = GetStdoutFromCommand("ls /dev/ttyACM*");
+
+	if (lsOut[0] == 'l' && lsOut[1] == 's' && lsOut[2] == ':') {
 		Logger::Log(Logger::LEVEL_WARNING,
-				"No ports found at /dev/ttyUSB*, resorting to default.");
+				"No ports found at /dev/ttyACM*, resorting to default.");
 		ardFD = open(PSOC_DEFAULT_PORT, O_RDWR);
 	} else {
 		char path[15];
 		for (int i = 0; i < 15; i++) {
-			if (lsOut[i] == 10)
+			if (lsOut[i] == 10 || lsOut[i] == 0)
 				break;
 
 			path[i] = lsOut[i];

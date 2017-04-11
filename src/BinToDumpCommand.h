@@ -13,7 +13,7 @@ public:
 	void Update() override;
 	bool IsFinished() override;
 	inline std::string GetCommandName() override {
-		return "Bin 2 Dump Position Command";
+		return "Bin To Dump Position Command";
 	}
 };
 }

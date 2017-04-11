@@ -28,7 +28,7 @@ BinToDumpCommand binToDump;
 BinToFillCommand binToFill;
 
 Command * conveyor;
-Conveyor
+ConveyorDumpCommand conveyorDump;
 
 double zero = 0;
 
@@ -174,14 +174,16 @@ void Main::OnClientMessageReceived(Packet& packet) {
 		packet >> slide_dir;
 		switch (slide_dir) {
 		case 0:
-			//Logger::Log(Logger::LEVEL_INFO_FINE, "Received bin slide packet (stop)");
+			Logger::Log(Logger::LEVEL_INFO_FINE,
+					"Received bin slide packet (stop)");
 			if (binMove != nullptr) {
 				binMove->Stop();
 			}
 			binMove = nullptr;
 			break;
 		case -1:
-			//Logger::Log(Logger::LEVEL_INFO_FINE, "Received bin slide packet (slide to fill)");
+			Logger::Log(Logger::LEVEL_INFO_FINE,
+					"Received bin slide packet (slide to fill)");
 			if (binMove != nullptr) {
 				binMove->Stop();
 			}
@@ -189,12 +191,34 @@ void Main::OnClientMessageReceived(Packet& packet) {
 			binMove->Start();
 			break;
 		case 1:
-			//Logger::Log(Logger::LEVEL_INFO_FINE, "Received bin slide packet (slide to dump)");
+			Logger::Log(Logger::LEVEL_INFO_FINE,
+					"Received bin slide packet (slide to dump)");
 			if (binMove != nullptr) {
 				binMove->Stop();
 			}
 			binMove = &binToDump;
 			binMove->Start();
+		}
+		break;
+	case CONVEYOR_PACKET:
+		int dir;
+		packet >> dir;
+		if (dir > 0) {
+			Logger::Log(Logger::LEVEL_INFO_FINE,
+					"Received conveyor packet (dump)");
+			if (conveyor != nullptr) {
+				conveyor->Stop();
+			}
+			conveyor = &conveyorDump;
+			conveyor->Start();
+			break;
+		} else {
+			Logger::Log(Logger::LEVEL_INFO_FINE,
+					"Received conveyor packet (stop)");
+			if (conveyor != nullptr) {
+				conveyor->Stop();
+			}
+			conveyor = nullptr;
 		}
 		break;
 	default:
@@ -289,6 +313,19 @@ void Main::SfmlWindowThread() {
 		}
 		Vector2f binLabelSize = DrawingUtil::DrawGenericText(binMoveText,
 				Vector2f(COL3 + binOutLabelSize.x, subsystemY + 48 - 36), false,
+				wlmCarton, Color::White, window);
+
+		subsystemY += 56;
+
+		Vector2f conveyorOutLabelSize = DrawingUtil::DrawGenericHeader(
+				"Conveyor: ", Vector2f(COL3, subsystemY), false, wlmCarton,
+				Color::Green, window);
+		std::string conveyorText = "";
+		if (conveyor != nullptr) {
+			conveyorText = conveyor->GetCommandName();
+		}
+		Vector2f conveyorLabelSize = DrawingUtil::DrawGenericText(conveyorText,
+				Vector2f(COL3 + conveyorOutLabelSize.x, subsystemY + 48 - 36), false,
 				wlmCarton, Color::White, window);
 
 		sf::VertexArray line = sf::VertexArray(sf::Lines, 2);
