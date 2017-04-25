@@ -14,6 +14,6 @@ void BinToFillCommand::Update() {
 }
 
 bool BinToFillCommand::IsFinished() {
-	return true; // TODO: Implement
+	return false; // TODO: Implement
 }
 }

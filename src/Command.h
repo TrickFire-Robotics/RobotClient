@@ -35,6 +35,7 @@ private:
 	long long _prevTime;
 	float deltaTime;
 	sf::Thread cmdThread;
+	sf::Mutex runningMutex;
 	bool running;
 
 	static bool killAll;

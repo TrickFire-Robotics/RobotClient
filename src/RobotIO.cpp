@@ -8,7 +8,8 @@
 namespace trickfire {
 sf::Thread RobotIO::commThread(&RobotIO::ThreadLoop);
 map<unsigned char, double> RobotIO::motorValues;
-sf::Mutex RobotIO::mutex_motorValues;
+map<unsigned char, bool> RobotIO::limitSwitches;
+sf::Mutex RobotIO::mutex_motorValues, RobotIO::mutex_limitSwitches;
 bool RobotIO::_running = false;
 int RobotIO::ardFD;
 unsigned char RobotIO::buffer[50];
@@ -58,7 +59,7 @@ void RobotIO::SimpleArcade(double forwards, double rot) {
 void RobotIO::Start() {
 	std::string lsOut = GetStdoutFromCommand("ls /dev/ttyACM*");
 
-	if (lsOut[0] == 'l' && lsOut[1] == 's' && lsOut[2] == ':') {
+	if (true || lsOut[0] == 'l' && lsOut[1] == 's' && lsOut[2] == ':') {
 		Logger::Log(Logger::LEVEL_WARNING,
 				"No ports found at /dev/ttyACM*, resorting to default.");
 		ardFD = open(PSOC_DEFAULT_PORT, O_RDWR);
@@ -138,6 +139,9 @@ void RobotIO::ThreadLoop() {
 			unsigned char key = iterator->first;
 			mutex_motorValues.unlock();
 
+			/*if (key == CONVEYOR) {
+				std::cout << "Sending conveyor: " << pwm << std::endl;
+			}*/
 			SendPSoCByte(key);
 			usleep(PSOC_SEND_DELAY);
 			if (pwm == 0)
@@ -188,6 +192,17 @@ void RobotIO::ProcessSensorPacket(unsigned char c) {
 				gyroYaw = std::stod(std::string(yC));
 				gyroPitch = std::stod(std::string(pC));
 				gyroRoll = std::stod(std::string(rC));
+			} else if (sensorMode == 2) {
+				char switchId = buffer[0];
+				char switchVal = buffer[1];
+
+				{
+					sf::Lock lock(mutex_limitSwitches);
+
+					limitSwitches[switchId] = (switchVal == 1);
+				}
+
+				cout << "Switch: " << switchId << ", Val: " << switchVal << endl;
 			}
 
 			sensorMode = -1;

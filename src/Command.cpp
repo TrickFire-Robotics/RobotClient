@@ -18,29 +18,37 @@ Command::~Command() {
 
 void Command::Start() {
 	if (!running) {
-		Logger::Log(Logger::LEVEL_INFO_FINE, "Starting command " + GetCommandName());
+		Logger::Log(Logger::LEVEL_INFO_FINE,
+				"Starting command " + GetCommandName());
 		_startTime = CURRENT_TIME;
 		_prevTime = CURRENT_TIME;
 		running = true;
 	} else {
-		Logger::Log(Logger::LEVEL_INFO_FINE, "Starting command "  + GetCommandName() + " (was already running)");
+		Logger::Log(Logger::LEVEL_INFO_FINE,
+				"Starting command " + GetCommandName()
+						+ " (was already running)");
 	}
 
 	OnStart();
 }
 
 void Command::Stop() {
-	Logger::Log(Logger::LEVEL_INFO_FINE, "Stopping command " + GetCommandName());
+	Logger::Log(Logger::LEVEL_INFO_FINE,
+			"Stopping command " + GetCommandName());
+	runningMutex.lock();
 	if (running) {
 		running = false;
 	}
+	runningMutex.unlock();
 	_startTime = 0.0f;
 	_prevTime = 0.0f;
 	deltaTime = 0.0f;
+	runningMutex.lock();
+	OnFinish();
+	runningMutex.unlock();
 }
 
 void Command::OnFinish() {
-
 }
 
 void Command::ThreadMethod(Command * command) {
@@ -51,12 +59,13 @@ void Command::ThreadMethod(Command * command) {
 			long timediff = CURRENT_TIME- command->_prevTime;
 			command->deltaTime = (float) timediff / TIME_DIVIDER;
 			command->_prevTime = CURRENT_TIME;
-
-			command->Update();
+			command->runningMutex.lock();
+			if (command->running)
+				command->Update();
+			command->runningMutex.unlock();
 		}
 		if (needsToStop && command->running) { // To prevent a doublestop (heyyy, drumming joke)
 			command->Stop();
-			command->OnFinish();
 			needsToStop = false;
 		}
 	}
@@ -65,7 +74,7 @@ void Command::ThreadMethod(Command * command) {
 float Command::GetRunningTime() {
 	if (!running)
 		return 0.0f;
-	return ((float) (CURRENT_TIME - _startTime)) / TIME_DIVIDER;
+	return ((float) (CURRENT_TIME- _startTime)) / TIME_DIVIDER;
 }
 
 float Command::GetDeltaTime() {

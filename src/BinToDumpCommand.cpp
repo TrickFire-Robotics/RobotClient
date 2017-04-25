@@ -14,6 +14,6 @@ void BinToDumpCommand::Update() {
 }
 
 bool BinToDumpCommand::IsFinished() {
-	return true; // TODO: Implement
+	return false; // TODO: Implement
 }
 }

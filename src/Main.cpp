@@ -33,7 +33,7 @@ ConveyorDumpCommand conveyorDump;
 double zero = 0;
 
 void Main::Start() {
-	Logger::SetLoggingLevel(Logger::LEVEL_INFO_FINE);
+	Logger::SetLoggingLevel(Logger::LEVEL_INFO);
 	RobotIO::Start();
 
 	Client client(SERVER_IP, 25565);

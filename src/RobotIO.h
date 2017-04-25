@@ -10,7 +10,7 @@
 #include <unistd.h>
 #include <termios.h>
 
-#define PSOC_DEFAULT_PORT "/dev/ttyACM0"
+#define PSOC_DEFAULT_PORT "/dev/ttyACM3"
 #define PI 3.14159265358979323846
 
 #define PSOC_SEND_DELAY 500
@@ -20,9 +20,13 @@
 #define DRIVE_REAR_LEFT 'c'
 #define DRIVE_REAR_RIGHT 'd'
 #define MINER_SPIN 'e'
-#define MINER_RAISE_LOWER 'f'
-#define BIN_SLIDE 'g'
-#define CONVEYOR 'h'
+#define MINER_MOVE_LOWER 'f'
+#define MINER_MOVE_UPPER 'g'
+#define BIN_SLIDE 'h'
+#define CONVEYOR 'i'
+
+#define RAIL_START_LIM 12
+#define RAIL_END_LIM 13
 
 using namespace std;
 
@@ -54,9 +58,16 @@ public:
 		return gyroRoll;
 	}
 
+	static inline bool GetLimitSwitch(unsigned char switchId) {
+		sf::Lock lock(mutex_limitSwitches);
+		return limitSwitches[switchId];
+	}
+
 private:
 	static map<unsigned char, double> motorValues;
+	static map<unsigned char, bool> limitSwitches;
 	static sf::Mutex mutex_motorValues;
+	static sf::Mutex mutex_limitSwitches;
 
 	static bool _running;
 
