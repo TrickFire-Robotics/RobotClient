@@ -124,10 +124,10 @@ void RobotIO::Stop() {
 
 void RobotIO::ThreadLoop() {
 	while (_running) {
-		unsigned char val;
+/*		unsigned char val;
 		if (read(ardFD, &val, 1) > 0) {
 			ProcessSensorPacket(val);
-		}
+		}*/
 
 		// TODO: Possibly change system to something more than one unsigned char
 		for (map<unsigned char, double>::iterator iterator =

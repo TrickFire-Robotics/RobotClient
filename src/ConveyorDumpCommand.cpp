@@ -7,7 +7,6 @@ void ConveyorDumpCommand::OnStart() {
 
 void ConveyorDumpCommand::OnFinish() {
 	RobotIO::SetMotor(CONVEYOR, 0.0);
-	std::cout << "Finishing CDC" << std::endl;
 }
 
 void ConveyorDumpCommand::Update() {
@@ -16,7 +15,6 @@ void ConveyorDumpCommand::Update() {
 	} else {
 		RobotIO::SetMotor(CONVEYOR, 0.0);
 	}
-	std::cout << "Updating CDC" << std::endl;
 }
 
 bool ConveyorDumpCommand::IsFinished() {

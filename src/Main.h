@@ -16,8 +16,6 @@
 #include "GyroResetCommand.h"
 #include "CoalMinerDigCommand.h"
 #include "CoalMinerEmptyCommand.h"
-#include "CoalMinerRaiseCommand.h"
-#include "CoalMinerLowerCommand.h"
 #include "BinToFillCommand.h"
 #include "BinToDumpCommand.h"
 #include "ConveyorDumpCommand.h"
@@ -25,6 +23,11 @@
 #include <iostream>
 #include <SFML/Window.hpp>
 #include <SFML/Graphics.hpp>
+
+#include "CoalMinerS1LowerCommand.h"
+#include "CoalMinerS1RaiseCommand.h"
+#include "CoalMinerS2LowerCommand.h"
+#include "CoalMinerS2RaiseCommand.h"
 
 #include "ProjectConstants.h"
 #if OPENCV

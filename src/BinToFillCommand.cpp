@@ -10,7 +10,7 @@ void BinToFillCommand::OnFinish() {
 }
 
 void BinToFillCommand::Update() {
-	RobotIO::SetMotor(BIN_SLIDE, 1.0);
+	RobotIO::SetMotor(BIN_SLIDE, -1.0);
 }
 
 bool BinToFillCommand::IsFinished() {

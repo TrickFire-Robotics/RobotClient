@@ -10,7 +10,7 @@
 #include <unistd.h>
 #include <termios.h>
 
-#define PSOC_DEFAULT_PORT "/dev/ttyACM3"
+#define PSOC_DEFAULT_PORT "/dev/ttyACM0"
 #define PI 3.14159265358979323846
 
 #define PSOC_SEND_DELAY 500
@@ -20,10 +20,12 @@
 #define DRIVE_REAR_LEFT 'c'
 #define DRIVE_REAR_RIGHT 'd'
 #define MINER_SPIN 'e'
-#define MINER_MOVE_LOWER 'f'
-#define MINER_MOVE_UPPER 'g'
-#define BIN_SLIDE 'h'
-#define CONVEYOR 'i'
+#define MINER_MOVE_LOWER_LEFT 'f'
+#define MINER_MOVE_LOWER_RIGHT 'g'
+#define MINER_MOVE_UPPER_LEFT 'h'
+#define MINER_MOVE_UPPER_RIGHT 'i'
+#define BIN_SLIDE 'j'
+#define CONVEYOR 'k'
 
 #define RAIL_START_LIM 12
 #define RAIL_END_LIM 13

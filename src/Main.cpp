@@ -19,9 +19,13 @@ Command * coalMiner;
 CoalMinerDigCommand cmDig;
 CoalMinerEmptyCommand cmEmpty;
 
-Command * coalMinerMove;
-CoalMinerRaiseCommand cmRaise;
-CoalMinerLowerCommand cmLower;
+Command * coalMinerS1Move;
+CoalMinerS1RaiseCommand cmS1Raise;
+CoalMinerS1LowerCommand cmS1Lower;
+
+Command * coalMinerS2Move;
+CoalMinerS2RaiseCommand cmS2Raise;
+CoalMinerS2LowerCommand cmS2Lower;
 
 Command * binMove;
 BinToDumpCommand binToDump;
@@ -105,38 +109,70 @@ void Main::OnClientMessageReceived(Packet& packet) {
 		packet >> forwards >> rotation;
 		standardDrive.SetVals(forwards, rotation);
 		break;
-	case MINER_MOVE_PACKET:
-		int move_dir;
-		packet >> move_dir;
-		switch (move_dir) {
+	case MINER_MOVE_S1_PACKET:
+		int move_s1_dir;
+		packet >> move_s1_dir;
+		switch (move_s1_dir) {
 		case 0:
 			Logger::Log(Logger::LEVEL_INFO_FINE,
-					"Received miner move packet (stop)");
-			if (coalMinerMove != nullptr) {
-				coalMinerMove->Stop();
+					"Received miner S1 move packet (stop)");
+			if (coalMinerS1Move != nullptr) {
+				coalMinerS1Move->Stop();
 			}
-			coalMinerMove = nullptr;
+			coalMinerS1Move = nullptr;
 			break;
 		case 1:
 			Logger::Log(Logger::LEVEL_INFO_FINE,
-					"Received miner move packet (raise)");
-			if (coalMinerMove != nullptr) {
-				coalMinerMove->Stop();
+					"Received miner S1 move packet (raise)");
+			if (coalMinerS1Move != nullptr) {
+				coalMinerS1Move->Stop();
 			}
-			coalMinerMove = &cmRaise;
-			coalMinerMove->Start();
+			coalMinerS1Move = &cmS1Raise;
+			coalMinerS1Move->Start();
 			break;
 		case -1:
 			Logger::Log(Logger::LEVEL_INFO_FINE,
-					"Received miner move packet (lower)");
-			if (coalMinerMove != nullptr) {
-				coalMinerMove->Stop();
+					"Received miner S1 move packet (lower)");
+			if (coalMinerS1Move != nullptr) {
+				coalMinerS1Move->Stop();
 			}
-			coalMinerMove = &cmLower;
-			coalMinerMove->Start();
+			coalMinerS1Move = &cmS1Lower;
+			coalMinerS1Move->Start();
 			break;
 		}
 		break;
+	case MINER_MOVE_S2_PACKET:
+			int move_s2_dir;
+			packet >> move_s2_dir;
+			switch (move_s2_dir) {
+			case 0:
+				Logger::Log(Logger::LEVEL_INFO_FINE,
+						"Received miner S2 move packet (stop)");
+				if (coalMinerS2Move != nullptr) {
+					coalMinerS2Move->Stop();
+				}
+				coalMinerS2Move = nullptr;
+				break;
+			case 1:
+				Logger::Log(Logger::LEVEL_INFO_FINE,
+						"Received miner S2 move packet (raise)");
+				if (coalMinerS2Move != nullptr) {
+					coalMinerS2Move->Stop();
+				}
+				coalMinerS2Move = &cmS1Raise;
+				coalMinerS2Move->Start();
+				break;
+			case -1:
+				Logger::Log(Logger::LEVEL_INFO_FINE,
+						"Received miner S2 move packet (lower)");
+				if (coalMinerS2Move != nullptr) {
+					coalMinerS2Move->Stop();
+				}
+				coalMinerS2Move = &cmS1Lower;
+				coalMinerS2Move->Start();
+				break;
+			}
+			break;
 	case MINER_SPIN_PACKET:
 		int spin_dir;
 		packet >> spin_dir;
@@ -291,15 +327,28 @@ void Main::SfmlWindowThread() {
 
 		subsystemY += 56;
 
-		Vector2f cmMoveOutLabelSize = DrawingUtil::DrawGenericHeader(
-				"CM Move: ", Vector2f(COL3, subsystemY), false, wlmCarton,
+		Vector2f cmMoveS1OutLabelSize = DrawingUtil::DrawGenericHeader(
+				"CM Move S1: ", Vector2f(COL3, subsystemY), false, wlmCarton,
 				Color::Green, window);
-		std::string cmMoveText = "";
-		if (coalMinerMove != nullptr) {
-			cmMoveText = coalMinerMove->GetCommandName();
+		std::string cmMoveS1Text = "";
+		if (coalMinerS1Move != nullptr) {
+			cmMoveS1Text = coalMinerS1Move->GetCommandName();
 		}
-		Vector2f cmMoveLabelSize = DrawingUtil::DrawGenericText(cmMoveText,
-				Vector2f(COL3 + cmMoveOutLabelSize.x, subsystemY + 48 - 36),
+		Vector2f cmMoveS1LabelSize = DrawingUtil::DrawGenericText(cmMoveS1Text,
+				Vector2f(COL3 + cmMoveS1OutLabelSize.x, subsystemY + 48 - 36),
+				false, wlmCarton, Color::White, window);
+
+		subsystemY += 56;
+
+		Vector2f cmMoveS2OutLabelSize = DrawingUtil::DrawGenericHeader(
+				"CM Move S2: ", Vector2f(COL3, subsystemY), false, wlmCarton,
+				Color::Green, window);
+		std::string cmMoveS2Text = "";
+		if (coalMinerS2Move != nullptr) {
+			cmMoveS2Text = coalMinerS2Move->GetCommandName();
+		}
+		Vector2f cmMoveS2LabelSize = DrawingUtil::DrawGenericText(cmMoveS2Text,
+				Vector2f(COL3 + cmMoveS2OutLabelSize.x, subsystemY + 48 - 36),
 				false, wlmCarton, Color::White, window);
 
 		subsystemY += 56;
