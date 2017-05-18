@@ -8,6 +8,7 @@ namespace trickfire {
 
 class CoalMinerS1RaiseCommand: public Command {
 public:
+	CoalMinerS1RaiseCommand();
 	void OnStart() override;
 	void OnFinish() override;
 	void Update() override;
@@ -15,6 +16,7 @@ public:
 	inline std::string GetCommandName() override {
 		return "Coal Miner S1 Raise Command";
 	}
+	double mod;
 };
 }
 

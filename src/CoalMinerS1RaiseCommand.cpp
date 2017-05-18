@@ -1,8 +1,12 @@
 #include "CoalMinerS1RaiseCommand.h"
 
 namespace trickfire {
-void CoalMinerS1RaiseCommand::OnStart() {
+CoalMinerS1RaiseCommand::CoalMinerS1RaiseCommand() : Command(), mod(0.8) {
 
+}
+
+void CoalMinerS1RaiseCommand::OnStart() {
+	
 }
 
 void CoalMinerS1RaiseCommand::OnFinish() {
@@ -11,7 +15,7 @@ void CoalMinerS1RaiseCommand::OnFinish() {
 }
 
 void CoalMinerS1RaiseCommand::Update() {
-	RobotIO::SetMotor(MINER_MOVE_LOWER_LEFT, -1.0);
+	RobotIO::SetMotor(MINER_MOVE_LOWER_LEFT, -mod);
 	RobotIO::SetMotor(MINER_MOVE_LOWER_RIGHT, -1.0);
 }
 

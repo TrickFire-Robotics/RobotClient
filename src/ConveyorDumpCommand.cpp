@@ -11,7 +11,7 @@ void ConveyorDumpCommand::OnFinish() {
 
 void ConveyorDumpCommand::Update() {
 	if (this->IsRunning()) {
-		RobotIO::SetMotor(CONVEYOR, 1.0);
+		RobotIO::SetMotor(CONVEYOR, -1.0);
 	} else {
 		RobotIO::SetMotor(CONVEYOR, 0.0);
 	}

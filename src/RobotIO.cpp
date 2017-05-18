@@ -41,6 +41,15 @@ void RobotIO::SetMotor(unsigned char motorId, double value) {
 					+ to_string(value));
 	sf::Lock motorValuesLock(mutex_motorValues);
 	motorValues[motorId] = value;
+
+	if (motorId == MINER_MOVE_LOWER_LEFT) {
+		cout << "Lower left: " << value << endl;
+	}
+
+	if (motorId == MINER_MOVE_UPPER_LEFT) {
+		cout << "Upper left: " << value << endl;
+
+	}
 }
 
 void RobotIO::SimpleArcade(double forwards, double rot) {
@@ -52,8 +61,18 @@ void RobotIO::SimpleArcade(double forwards, double rot) {
 	SetMotor(DRIVE_FRONT_RIGHT, right);
 	SetMotor(DRIVE_REAR_RIGHT, right);
 
-	DisplayVariables::SetDrive(forwards);
-	DisplayVariables::SetRot(rot);
+	DisplayVariables::SetLeft(forwards);
+	DisplayVariables::SetRight(rot);
+}
+
+void RobotIO::SimpleTank(double l, double r) {
+	SetMotor(DRIVE_FRONT_LEFT, -l);
+	SetMotor(DRIVE_REAR_LEFT, -l);
+	SetMotor(DRIVE_FRONT_RIGHT, r);
+	SetMotor(DRIVE_REAR_RIGHT, r);
+
+	DisplayVariables::SetLeft(l);
+	DisplayVariables::SetRight(r);
 }
 
 void RobotIO::Start() {
@@ -124,10 +143,10 @@ void RobotIO::Stop() {
 
 void RobotIO::ThreadLoop() {
 	while (_running) {
-/*		unsigned char val;
-		if (read(ardFD, &val, 1) > 0) {
-			ProcessSensorPacket(val);
-		}*/
+		/*		unsigned char val;
+		 if (read(ardFD, &val, 1) > 0) {
+		 ProcessSensorPacket(val);
+		 }*/
 
 		// TODO: Possibly change system to something more than one unsigned char
 		for (map<unsigned char, double>::iterator iterator =
@@ -139,9 +158,6 @@ void RobotIO::ThreadLoop() {
 			unsigned char key = iterator->first;
 			mutex_motorValues.unlock();
 
-			/*if (key == CONVEYOR) {
-				std::cout << "Sending conveyor: " << pwm << std::endl;
-			}*/
 			SendPSoCByte(key);
 			usleep(PSOC_SEND_DELAY);
 			if (pwm == 0)
@@ -202,7 +218,8 @@ void RobotIO::ProcessSensorPacket(unsigned char c) {
 					limitSwitches[switchId] = (switchVal == 1);
 				}
 
-				cout << "Switch: " << switchId << ", Val: " << switchVal << endl;
+				cout << "Switch: " << switchId << ", Val: " << switchVal
+						<< endl;
 			}
 
 			sensorMode = -1;

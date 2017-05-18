@@ -38,7 +38,9 @@ class RobotIO {
 public:
 	static void SetMotor(unsigned char motorId, double value);
 
-	static void SimpleArcade(double forwards, double rot);
+	static void SimpleArcade(double forwards, double rot = 0);
+
+	static void SimpleTank(double left, double right);
 
 	static void Start();
 

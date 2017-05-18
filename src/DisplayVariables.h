@@ -7,16 +7,16 @@ namespace trickfire {
 
 class DisplayVariables {
 public:
-	static float GetDrive();
-	static float GetRot();
+	static float GetLeft();
+	static float GetRight();
 
-	static void SetDrive(float drive);
-	static void SetRot(float rot);
+	static void SetLeft(float drive);
+	static void SetRight(float rot);
 private:
 	static sf::Mutex mutex_all;
 
-	static float drive;
-	static float rot;
+	static float left;
+	static float right;
 };
 }
 

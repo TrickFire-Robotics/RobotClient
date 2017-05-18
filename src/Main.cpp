@@ -104,10 +104,10 @@ void Main::OnClientMessageReceived(Packet& packet) {
 	switch (type) {
 	case DRIVE_PACKET:
 		Logger::Log(Logger::LEVEL_INFO_VERY_FINE, "Received drive packet");
-		double forwards;
-		double rotation;
-		packet >> forwards >> rotation;
-		standardDrive.SetVals(forwards, rotation);
+		double left;
+		double right;
+		packet >> left >> right;
+		standardDrive.SetVals(left, right);
 		break;
 	case MINER_MOVE_S1_PACKET:
 		int move_s1_dir;
@@ -159,7 +159,7 @@ void Main::OnClientMessageReceived(Packet& packet) {
 				if (coalMinerS2Move != nullptr) {
 					coalMinerS2Move->Stop();
 				}
-				coalMinerS2Move = &cmS1Raise;
+				coalMinerS2Move = &cmS2Raise;
 				coalMinerS2Move->Start();
 				break;
 			case -1:
@@ -168,7 +168,7 @@ void Main::OnClientMessageReceived(Packet& packet) {
 				if (coalMinerS2Move != nullptr) {
 					coalMinerS2Move->Stop();
 				}
-				coalMinerS2Move = &cmS1Lower;
+				coalMinerS2Move = &cmS2Lower;
 				coalMinerS2Move->Start();
 				break;
 			}
@@ -257,6 +257,12 @@ void Main::OnClientMessageReceived(Packet& packet) {
 			conveyor = nullptr;
 		}
 		break;
+	case CONVEYOR_PACKET + 1:
+		double val;
+		packet >> val;
+		cmS1Lower.mod = val;
+		cmS1Raise.mod = val;
+		break;
 	default:
 		Logger::Log(Logger::LEVEL_INFO_FINE,
 				"Received unknown packet (type " + to_string(type) + ")");
@@ -288,16 +294,16 @@ void Main::SfmlWindowThread() {
 
 		Color background(64, 64, 64);
 
-		Vector2f forwLabelSize = DrawingUtil::DrawGenericHeader("Rot.",
+		Vector2f forwLabelSize = DrawingUtil::DrawGenericHeader("Left",
 				Vector2f(COL1, ROW1), false, wlmCarton, Color::Green, window);
-		DrawingUtil::DrawCenteredAxisBar(DisplayVariables::GetRot(),
+		DrawingUtil::DrawCenteredAxisBar(DisplayVariables::GetLeft(),
 				Vector2f(COL1 + (forwLabelSize.x / 2) - 20, ROW2),
 				Vector2f(40, 264), Vector2f(4, 4), background, Color::Green,
 				window);
 
-		Vector2f rotLabelSize = DrawingUtil::DrawGenericHeader("Drv.",
+		Vector2f rotLabelSize = DrawingUtil::DrawGenericHeader("Right",
 				Vector2f(COL2, ROW1), false, wlmCarton, Color::Green, window);
-		DrawingUtil::DrawCenteredAxisBar(DisplayVariables::GetDrive(),
+		DrawingUtil::DrawCenteredAxisBar(DisplayVariables::GetRight(),
 				Vector2f(COL2 + (rotLabelSize.x / 2) - 20, ROW2),
 				Vector2f(40, 264), Vector2f(4, 4), background, Color::Green,
 				window);

@@ -2,26 +2,26 @@
 
 namespace trickfire {
 sf::Mutex DisplayVariables::mutex_all;
-float DisplayVariables::drive;
-float DisplayVariables::rot;
+float DisplayVariables::left;
+float DisplayVariables::right;
 
-float DisplayVariables::GetDrive() {
+float DisplayVariables::GetLeft() {
 	sf::Lock lock(DisplayVariables::mutex_all);
-	return DisplayVariables::drive;
+	return DisplayVariables::left;
 }
 
-float DisplayVariables::GetRot() {
+float DisplayVariables::GetRight() {
 	sf::Lock lock(DisplayVariables::mutex_all);
-	return DisplayVariables::rot;
+	return DisplayVariables::right;
 }
 
-void DisplayVariables::SetDrive(float drive) {
+void DisplayVariables::SetLeft(float l) {
 	sf::Lock lock(DisplayVariables::mutex_all);
-	DisplayVariables::drive = drive;
+	DisplayVariables::left = l;
 }
 
-void DisplayVariables::SetRot(float rot) {
+void DisplayVariables::SetRight(float r) {
 	sf::Lock lock(DisplayVariables::mutex_all);
-	DisplayVariables::rot = rot;
+	DisplayVariables::right = r;
 }
 }
