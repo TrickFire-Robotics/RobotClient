@@ -24,9 +24,9 @@
 #include <SFML/Window.hpp>
 #include <SFML/Graphics.hpp>
 
-#include "CoalMinerS1LowerCommand.h"
+#include "CoalMinerS1MoveCommand.h"
 #include "CoalMinerS1RaiseCommand.h"
-#include "CoalMinerS2LowerCommand.h"
+#include "CoalMinerS2MoveCommand.h"
 #include "CoalMinerS2RaiseCommand.h"
 
 #include "ProjectConstants.h"

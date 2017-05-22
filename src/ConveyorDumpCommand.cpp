@@ -1,6 +1,10 @@
 #include "ConveyorDumpCommand.h"
 
 namespace trickfire {
+ConveyorDumpCommand::ConveyorDumpCommand(double s) : Command(), speed(s) {
+
+}
+
 void ConveyorDumpCommand::OnStart() {
 
 }
@@ -11,7 +15,7 @@ void ConveyorDumpCommand::OnFinish() {
 
 void ConveyorDumpCommand::Update() {
 	if (this->IsRunning()) {
-		RobotIO::SetMotor(CONVEYOR, -1.0);
+		RobotIO::SetMotor(CONVEYOR, -speed);
 	} else {
 		RobotIO::SetMotor(CONVEYOR, 0.0);
 	}

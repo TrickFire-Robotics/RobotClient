@@ -42,14 +42,13 @@ void RobotIO::SetMotor(unsigned char motorId, double value) {
 	sf::Lock motorValuesLock(mutex_motorValues);
 	motorValues[motorId] = value;
 
-	if (motorId == MINER_MOVE_LOWER_LEFT) {
+	/*if (motorId == MINER_MOVE_LOWER_LEFT) {
 		cout << "Lower left: " << value << endl;
 	}
 
 	if (motorId == MINER_MOVE_UPPER_LEFT) {
 		cout << "Upper left: " << value << endl;
-
-	}
+	}*/
 }
 
 void RobotIO::SimpleArcade(double forwards, double rot) {
@@ -66,10 +65,10 @@ void RobotIO::SimpleArcade(double forwards, double rot) {
 }
 
 void RobotIO::SimpleTank(double l, double r) {
-	SetMotor(DRIVE_FRONT_LEFT, -l);
-	SetMotor(DRIVE_REAR_LEFT, -l);
-	SetMotor(DRIVE_FRONT_RIGHT, r);
-	SetMotor(DRIVE_REAR_RIGHT, r);
+	SetMotor(DRIVE_FRONT_LEFT, l);
+	SetMotor(DRIVE_REAR_LEFT, l);
+	SetMotor(DRIVE_FRONT_RIGHT, -r);
+	SetMotor(DRIVE_REAR_RIGHT, -r);
 
 	DisplayVariables::SetLeft(l);
 	DisplayVariables::SetRight(r);

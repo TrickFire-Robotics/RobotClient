@@ -1,22 +1,22 @@
-#ifndef COALMINERS1LOWERCOMMAND_H_
-#define COALMINERS1LOWERCOMMAND_H_
+#ifndef COALMINERS1MOVECOMMAND_H_
+#define COALMINERS1MOVECOMMAND_H_
 
 #include "Command.h"
 #include "RobotIO.h"
 
 namespace trickfire {
 
-class CoalMinerS1LowerCommand: public Command {
+class CoalMinerS1MoveCommand: public Command {
 public:
-	CoalMinerS1LowerCommand();
+	CoalMinerS1MoveCommand(double l = 1.0, double r = 1.0);
 	void OnStart() override;
 	void OnFinish() override;
 	void Update() override;
 	bool IsFinished() override;
 	inline std::string GetCommandName() override {
-		return "Coal Miner S1 Lower Command";
+		return "Coal Miner S1 Move Command";
 	}
-	double mod;
+	double left, right;
 };
 }
 

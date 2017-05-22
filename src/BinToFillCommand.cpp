@@ -1,6 +1,10 @@
 #include "BinToFillCommand.h"
 
 namespace trickfire {
+BinToFillCommand::BinToFillCommand(double time) : time(time) {
+
+}
+
 void BinToFillCommand::OnStart() {
 
 }
@@ -14,6 +18,6 @@ void BinToFillCommand::Update() {
 }
 
 bool BinToFillCommand::IsFinished() {
-	return false; // TODO: Implement
+	return (time > 0) ? this->GetRunningTime() > time : false;
 }
 }

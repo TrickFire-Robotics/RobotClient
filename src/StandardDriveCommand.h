@@ -14,20 +14,20 @@ public:
 
 	inline void SetVals(double forward, double rot) {
 		mut_val.lock();
-		this->forward = forward;
-		this->rot = rot;
+		this->left = forward;
+		this->right = rot;
 		mut_val.unlock();
 	}
 
 	inline void SetForward(double forward) {
 		mut_val.lock();
-		this->forward = forward;
+		this->left = forward;
 		mut_val.unlock();
 	}
 
 	inline void SetRot(double rot) {
 		mut_val.lock();
-		this->rot = rot;
+		this->right = rot;
 		mut_val.unlock();
 	}
 
@@ -35,7 +35,7 @@ public:
 		return "Standard Drive Command";
 	}
 private:
-	double forward, rot;
+	double left, right;
 	sf::Mutex mut_val;
 };
 }

@@ -10,7 +10,7 @@
 #include <unistd.h>
 #include <termios.h>
 
-#define PSOC_DEFAULT_PORT "/dev/ttyACM0"
+#define PSOC_DEFAULT_PORT "/dev/ttyACM35"
 #define PI 3.14159265358979323846
 
 #define PSOC_SEND_DELAY 500

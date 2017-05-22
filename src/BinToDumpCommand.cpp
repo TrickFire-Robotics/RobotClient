@@ -1,6 +1,10 @@
 #include "BinToDumpCommand.h"
 
 namespace trickfire {
+BinToDumpCommand::BinToDumpCommand(double time) : time(time) {
+
+}
+
 void BinToDumpCommand::OnStart() {
 
 }
@@ -14,6 +18,6 @@ void BinToDumpCommand::Update() {
 }
 
 bool BinToDumpCommand::IsFinished() {
-	return false; // TODO: Implement
+	return (time > 0) ? this->GetRunningTime() > time : false;
 }
 }

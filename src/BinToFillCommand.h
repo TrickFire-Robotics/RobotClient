@@ -8,6 +8,7 @@ namespace trickfire {
 
 class BinToFillCommand: public Command {
 public:
+	BinToFillCommand(double time = 0);
 	void OnStart() override;
 	void OnFinish() override;
 	void Update() override;
@@ -15,6 +16,8 @@ public:
 	inline std::string GetCommandName() override {
 		return "Bin To Fill Position Command";
 	}
+private:
+	double time;
 };
 }
 

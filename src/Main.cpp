@@ -20,16 +20,18 @@ CoalMinerDigCommand cmDig;
 CoalMinerEmptyCommand cmEmpty;
 
 Command * coalMinerS1Move;
-CoalMinerS1RaiseCommand cmS1Raise;
-CoalMinerS1LowerCommand cmS1Lower;
+CoalMinerS1MoveCommand cmS1Move;
+//CoalMinerS1LowerCommand cmS1Lower;
 
 Command * coalMinerS2Move;
-CoalMinerS2RaiseCommand cmS2Raise;
-CoalMinerS2LowerCommand cmS2Lower;
+CoalMinerS2MoveCommand cmS2Move;
+//CoalMinerS2LowerCommand cmS2Lower;
 
 Command * binMove;
 BinToDumpCommand binToDump;
+BinToDumpCommand binToDumpAuto(3);
 BinToFillCommand binToFill;
+BinToFillCommand binToFillAuto(3);
 
 Command * conveyor;
 ConveyorDumpCommand conveyorDump;
@@ -111,7 +113,8 @@ void Main::OnClientMessageReceived(Packet& packet) {
 		break;
 	case MINER_MOVE_S1_PACKET:
 		int move_s1_dir;
-		packet >> move_s1_dir;
+		double s1L, s1R;
+		packet >> move_s1_dir >> s1L >> s1R;
 		switch (move_s1_dir) {
 		case 0:
 			Logger::Log(Logger::LEVEL_INFO_FINE,
@@ -122,28 +125,24 @@ void Main::OnClientMessageReceived(Packet& packet) {
 			coalMinerS1Move = nullptr;
 			break;
 		case 1:
-			Logger::Log(Logger::LEVEL_INFO_FINE,
-					"Received miner S1 move packet (raise)");
-			if (coalMinerS1Move != nullptr) {
-				coalMinerS1Move->Stop();
-			}
-			coalMinerS1Move = &cmS1Raise;
-			coalMinerS1Move->Start();
-			break;
 		case -1:
 			Logger::Log(Logger::LEVEL_INFO_FINE,
-					"Received miner S1 move packet (lower)");
+					"Received miner S1 move packet");
+			std::cout << "Sides: L " << s1L << " R " << s1R << std::endl;
 			if (coalMinerS1Move != nullptr) {
 				coalMinerS1Move->Stop();
 			}
-			coalMinerS1Move = &cmS1Lower;
+			coalMinerS1Move = &cmS1Move;
+			cmS1Move.left = s1L;
+			cmS1Move.right = s1R;
 			coalMinerS1Move->Start();
 			break;
 		}
 		break;
 	case MINER_MOVE_S2_PACKET:
 			int move_s2_dir;
-			packet >> move_s2_dir;
+			double s2L, s2R;
+			packet >> move_s2_dir >> s2L >> s2R;
 			switch (move_s2_dir) {
 			case 0:
 				Logger::Log(Logger::LEVEL_INFO_FINE,
@@ -154,21 +153,15 @@ void Main::OnClientMessageReceived(Packet& packet) {
 				coalMinerS2Move = nullptr;
 				break;
 			case 1:
-				Logger::Log(Logger::LEVEL_INFO_FINE,
-						"Received miner S2 move packet (raise)");
-				if (coalMinerS2Move != nullptr) {
-					coalMinerS2Move->Stop();
-				}
-				coalMinerS2Move = &cmS2Raise;
-				coalMinerS2Move->Start();
-				break;
 			case -1:
 				Logger::Log(Logger::LEVEL_INFO_FINE,
-						"Received miner S2 move packet (lower)");
+						"Received miner S2 move packet");
 				if (coalMinerS2Move != nullptr) {
 					coalMinerS2Move->Stop();
 				}
-				coalMinerS2Move = &cmS2Lower;
+				coalMinerS2Move = &cmS2Move;
+				cmS2Move.left = s2L;
+				cmS2Move.right = s2R;
 				coalMinerS2Move->Start();
 				break;
 			}
@@ -218,34 +211,37 @@ void Main::OnClientMessageReceived(Packet& packet) {
 			binMove = nullptr;
 			break;
 		case -1:
+		case -2:
 			Logger::Log(Logger::LEVEL_INFO_FINE,
 					"Received bin slide packet (slide to fill)");
 			if (binMove != nullptr) {
 				binMove->Stop();
 			}
-			binMove = &binToFill;
+			binMove = (slide_dir == -2) ? &binToFillAuto : &binToFill;
 			binMove->Start();
 			break;
 		case 1:
+		case 2:
 			Logger::Log(Logger::LEVEL_INFO_FINE,
 					"Received bin slide packet (slide to dump)");
 			if (binMove != nullptr) {
 				binMove->Stop();
 			}
-			binMove = &binToDump;
+			binMove = (slide_dir == 2) ? &binToDumpAuto : &binToDump;
 			binMove->Start();
 		}
 		break;
 	case CONVEYOR_PACKET:
 		int dir;
 		packet >> dir;
-		if (dir > 0) {
+		if (dir != 0) {
 			Logger::Log(Logger::LEVEL_INFO_FINE,
 					"Received conveyor packet (dump)");
 			if (conveyor != nullptr) {
 				conveyor->Stop();
 			}
 			conveyor = &conveyorDump;
+			conveyorDump.speed = dir;
 			conveyor->Start();
 			break;
 		} else {
@@ -257,12 +253,12 @@ void Main::OnClientMessageReceived(Packet& packet) {
 			conveyor = nullptr;
 		}
 		break;
-	case CONVEYOR_PACKET + 1:
+	/*case CONVEYOR_PACKET + 1:
 		double val;
 		packet >> val;
 		cmS1Lower.mod = val;
-		cmS1Raise.mod = val;
-		break;
+		cmS1Move.mod = val;
+		break;*/
 	default:
 		Logger::Log(Logger::LEVEL_INFO_FINE,
 				"Received unknown packet (type " + to_string(type) + ")");
@@ -324,7 +320,7 @@ void Main::SfmlWindowThread() {
 				Vector2f(COL3, subsystemY), false, wlmCarton, Color::Green,
 				window);
 		std::string cmText = "";
-		if (coalMiner != nullptr) {
+		if (coalMiner != nullptr && coalMiner->IsRunning()) {
 			cmText = coalMiner->GetCommandName();
 		}
 		Vector2f cmLabelSize = DrawingUtil::DrawGenericText(cmText,
@@ -337,7 +333,7 @@ void Main::SfmlWindowThread() {
 				"CM Move S1: ", Vector2f(COL3, subsystemY), false, wlmCarton,
 				Color::Green, window);
 		std::string cmMoveS1Text = "";
-		if (coalMinerS1Move != nullptr) {
+		if (coalMinerS1Move != nullptr && coalMinerS1Move->IsRunning()) {
 			cmMoveS1Text = coalMinerS1Move->GetCommandName();
 		}
 		Vector2f cmMoveS1LabelSize = DrawingUtil::DrawGenericText(cmMoveS1Text,
@@ -350,7 +346,7 @@ void Main::SfmlWindowThread() {
 				"CM Move S2: ", Vector2f(COL3, subsystemY), false, wlmCarton,
 				Color::Green, window);
 		std::string cmMoveS2Text = "";
-		if (coalMinerS2Move != nullptr) {
+		if (coalMinerS2Move != nullptr && coalMinerS2Move->IsRunning()) {
 			cmMoveS2Text = coalMinerS2Move->GetCommandName();
 		}
 		Vector2f cmMoveS2LabelSize = DrawingUtil::DrawGenericText(cmMoveS2Text,
@@ -363,7 +359,7 @@ void Main::SfmlWindowThread() {
 				Vector2f(COL3, subsystemY), false, wlmCarton, Color::Green,
 				window);
 		std::string binMoveText = "";
-		if (binMove != nullptr) {
+		if (binMove != nullptr && binMove->IsRunning()) {
 			binMoveText = binMove->GetCommandName();
 		}
 		Vector2f binLabelSize = DrawingUtil::DrawGenericText(binMoveText,
@@ -376,7 +372,7 @@ void Main::SfmlWindowThread() {
 				"Conveyor: ", Vector2f(COL3, subsystemY), false, wlmCarton,
 				Color::Green, window);
 		std::string conveyorText = "";
-		if (conveyor != nullptr) {
+		if (conveyor != nullptr && conveyor->IsRunning()) {
 			conveyorText = conveyor->GetCommandName();
 		}
 		Vector2f conveyorLabelSize = DrawingUtil::DrawGenericText(conveyorText,
