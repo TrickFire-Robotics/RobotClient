@@ -36,6 +36,9 @@ BinToFillCommand binToFillAuto(3);
 Command * conveyor;
 ConveyorDumpCommand conveyorDump;
 
+CameraSendCommand * cam0 = nullptr;
+CameraSendCommand * cam1 = nullptr;
+
 double zero = 0;
 
 void Main::Start() {
@@ -51,8 +54,13 @@ void Main::Start() {
 
 #if OPENCV
 #if CAMERA
-	CameraSendCommand cameraCommand(&client, &mut_client);
-	cameraCommand.Start();
+	CameraSendCommand camera0Command(&client, &mut_client, 0);
+	cam0 = &camera0Command;
+	camera0Command.Start();
+
+	CameraSendCommand camera1Command(&client, &mut_client, 1);
+	cam1 = &camera1Command;
+	camera1Command.Start();
 #endif
 #if KINECT
 	Freenect::Freenect freenect;
@@ -252,6 +260,14 @@ void Main::OnClientMessageReceived(Packet& packet) {
 			}
 			conveyor = nullptr;
 		}
+		break;
+	case CONVEYOR_PACKET + 1:
+		bool camOn;
+		packet >> camOn;
+
+		cam0->mut_Transmit.lock();
+		cam0->transmit = camOn;
+		cam0->mut_Transmit.unlock();
 		break;
 	/*case CONVEYOR_PACKET + 1:
 		double val;

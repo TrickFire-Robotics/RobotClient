@@ -3,8 +3,8 @@
 #if OPENCV
 
 namespace trickfire {
-CameraSendCommand::CameraSendCommand(Client * client, sf::Mutex * mut_client) :
-		_client(client), mut_client(mut_client), cap(-1), _last_time(0.0) {
+CameraSendCommand::CameraSendCommand(Client * client, sf::Mutex * mut_client, int c) :
+		_client(client), mut_client(mut_client), cam(c), cap(c), _last_time(0.0) {
 
 }
 
@@ -17,6 +17,8 @@ void CameraSendCommand::OnFinish() {
 }
 
 void CameraSendCommand::Update() {
+	if (!cap.isOpened()) return;
+
 	mut_image.lock();
 	cap >> frameRGB;
 	mut_image.unlock();
@@ -51,16 +53,22 @@ void CameraSendCommand::Update() {
 	}*/
 
 	if (GetRunningTime() - _last_time > 1.0 / CAMERA_SEND_FPS) {
-		double scale = 0.35;
+		mut_Transmit.lock();
+		bool work = transmit;
+		mut_Transmit.unlock();
+
+		if (!work) return;
+
+		double scale = 0.8;
 		cv::resize(frameRGB, frameRGB, cv::Size(0, 0), scale, scale);
 		Packet camPacket;
 		camPacket << CAMERA_PACKET;
-		camPacket << 0;
+		camPacket << cam;
 		camPacket << frameRGB.rows;
-		camPacket << frameRGB.cols;
+		camPacket << frameRGB.cols / 2;
 		uint8_t* pixelPtr = (uint8_t*) frameRGB.data;
 		for (int y = 0; y < frameRGB.rows; y++) {
-			for (int x = 0; x < frameRGB.cols; x++) {
+			for (int x = (frameRGB.cols / 4); x < (3 * frameRGB.cols / 4); x++) {
 				camPacket << pixelPtr[y * frameRGB.cols * 3 + x * 3 + 0];
 				camPacket << pixelPtr[y * frameRGB.cols * 3 + x * 3 + 1];
 				camPacket << pixelPtr[y * frameRGB.cols * 3 + x * 3 + 2];
