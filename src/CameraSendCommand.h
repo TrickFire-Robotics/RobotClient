@@ -9,7 +9,6 @@
 #include "Client.h"
 #include "NetworkingConstants.h"
 #include <opencv.hpp>
-#include <aruco.hpp>
 
 namespace trickfire {
 class CameraSendCommand: public Command {
