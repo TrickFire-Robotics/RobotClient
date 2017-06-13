@@ -64,11 +64,11 @@ void RobotIO::SimpleArcade(double forwards, double rot) {
 	DisplayVariables::SetRight(rot);
 }
 
-void RobotIO::SimpleTank(double l, double r) {
-	SetMotor(DRIVE_FRONT_LEFT, l);
-	SetMotor(DRIVE_REAR_LEFT, l);
-	SetMotor(DRIVE_FRONT_RIGHT, -r);
-	SetMotor(DRIVE_REAR_RIGHT, -r);
+void RobotIO::SimpleTank(double l, double r, bool fl, bool rl, bool fr, bool rr) {
+	SetMotor(DRIVE_FRONT_LEFT, fl ? l : 0.0);
+	SetMotor(DRIVE_REAR_LEFT, rl ? l : 0.0);
+	SetMotor(DRIVE_FRONT_RIGHT, fr ? -r : 0.0);
+	SetMotor(DRIVE_REAR_RIGHT, rr ? -r : 0.0);
 
 	DisplayVariables::SetLeft(l);
 	DisplayVariables::SetRight(r);

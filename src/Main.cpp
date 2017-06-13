@@ -58,9 +58,9 @@ void Main::Start() {
 	cam0 = &camera0Command;
 	camera0Command.Start();
 
-	CameraSendCommand camera1Command(&client, &mut_client, 1);
-	cam1 = &camera1Command;
-	camera1Command.Start();
+	//CameraSendCommand camera1Command(&client, &mut_client, 1);
+	//cam1 = &camera1Command;
+	//camera1Command.Start();
 #endif
 #if KINECT
 	Freenect::Freenect freenect;
@@ -116,8 +116,10 @@ void Main::OnClientMessageReceived(Packet& packet) {
 		Logger::Log(Logger::LEVEL_INFO_VERY_FINE, "Received drive packet");
 		double left;
 		double right;
-		packet >> left >> right;
-		standardDrive.SetVals(left, right);
+		bool fl, rl, fr, rr;
+		packet >> left >> right >> fl >> rl >> fr >> rr;
+		//std::cout << "Wheel bools: " << fl << " " << rl << " " << fr << " " << rr << std::endl;
+		standardDrive.SetVals(left, right, fl, rl, fr, rr);
 		break;
 	case MINER_MOVE_S1_PACKET:
 		int move_s1_dir;

@@ -40,7 +40,7 @@ public:
 
 	static void SimpleArcade(double forwards, double rot = 0);
 
-	static void SimpleTank(double left, double right);
+	static void SimpleTank(double left, double right, bool fl = true, bool rl = true, bool fr = true, bool rr = true);
 
 	static void Start();
 

@@ -12,10 +12,14 @@ public:
 	void Update() override;
 	bool IsFinished() override;
 
-	inline void SetVals(double forward, double rot) {
+	inline void SetVals(double forward, double rot, bool fl, bool rl, bool fr, bool rr) {
 		mut_val.lock();
 		this->left = forward;
 		this->right = rot;
+		this->fl = fl;
+		this->rl = rl;
+		this->fr = fr;
+		this->rr = rr;
 		mut_val.unlock();
 	}
 
@@ -36,6 +40,7 @@ public:
 	}
 private:
 	double left, right;
+	bool fl, rl, fr, rr;
 	sf::Mutex mut_val;
 };
 }

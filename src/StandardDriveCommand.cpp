@@ -6,7 +6,7 @@ void StandardDriveCommand::OnStart() {
 }
 
 void StandardDriveCommand::Update() {
-	RobotIO::SimpleTank(left, right);
+	RobotIO::SimpleTank(left, right, fl, rl, fr, rr);
 }
 
 bool StandardDriveCommand::IsFinished() {
